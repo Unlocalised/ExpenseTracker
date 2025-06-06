@@ -40,7 +40,7 @@ public static class ConfigureServices
 
             // Add the fluent validations schema processor
             configure.SchemaSettings.SchemaProcessors.Add(fluentValidationSchemaProcessor);
-            configure.Title = "CleanArchitecture API";
+            configure.Title = "ExpenseService API";
             configure.PostProcess = (document) => document.BasePath = "/expense/api";
         });
         services.AddCors(cors =>
