@@ -1,0 +1,16 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: auditservice
+    url: http://auditservice:8080
+    routes:
+    - name: auditservice
+      paths:
+      - /audit/api
+  - name: expenseservice
+    url: http://expenseservice:8080
+    routes:
+    - name: expenseservice
+      paths:
+      - /expense/api

@@ -1,0 +1,23 @@
+﻿
+using AuditService.Application.Account.GetAccountById;
+using AuditService.Application.Account.GetAccounts;
+using ExpenseTracker.Api.Controllers;
+using ExpenseTracker.Domain.Account;
+using Microsoft.AspNetCore.Mvc;
+
+namespace AuditService.Api.Controllers;
+
+public class AccountsController : ApiControllerBase
+{
+    [HttpGet("{id}")]
+    public async Task<ActionResult<AccountReadModel>> GetAccountById(Guid id, CancellationToken cancellationToken)
+    {
+        return await Mediator.Send(new GetAccountByIdQuery(id), cancellationToken);
+    }
+
+    [HttpGet]
+    public async Task<IReadOnlyList<AccountReadModel>> GetAccounts(CancellationToken cancellationToken)
+    {
+        return await Mediator.Send(new GetAccountsQuery(), cancellationToken);
+    }
+}

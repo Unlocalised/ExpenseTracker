@@ -1,0 +1,82 @@
+services:
+  expenseservice:
+    image: expenseservice
+    build:
+      context: src
+      dockerfile: ExpenseService/ExpenseService.Api/Dockerfile
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+
+  auditservice:
+    image: auditservice
+    build:
+      context: src
+      dockerfile: AuditService/AuditService.Api/Dockerfile
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+
+  kong:
+    container_name: kong
+    image: kong:3.9.0
+    restart: always
+    environment:
+      KONG_DATABASE: "off"
+      KONG_LOG_LEVEL: error
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_PROXY_LISTEN: "0.0.0.0:80"
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001"
+      KONG_ADMIN_GUI_LISTEN: "0.0.0.0:8002"
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_DECLARATIVE_CONFIG: "/etc/kong/kong.yml"
+      KONG_PASSWORD: LUUcvHJHv22GE7e
+    healthcheck:
+      test: [ "CMD", "kong", "health" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    ports:
+      - "80:80"
+      - "8001:8001"
+      - "8002:8002"
+    volumes:
+      - ./kong/config/kong.conf:/etc/kong/kong.conf
+      - ./kong/declarative/kong.yml:/etc/kong/kong.yml
+
+  postgres:
+    container_name: postgres
+    image: 'postgres:16'
+    working_dir: /usr/app
+    restart: unless-stopped
+    expose:
+      - 5432:5432
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-d", "postgres", "-U", "postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: LUUcvHJHv22GE7e
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./postgres/postgresql-databases.sh:/docker-entrypoint-initdb.d/postgresql-databases.sh
+
+  redis:
+    image: redis
+    container_name: redis
+    restart: unless-stopped
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    expose:
+      - 6379:6379
+    volumes:
+      - ./data/redis:/data
