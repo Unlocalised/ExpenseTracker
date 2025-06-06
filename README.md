@@ -1,98 +1,103 @@
-# ExpenseTracker
+# ExpenseTracker 🧾
 
-**ExpenseTracker** is a modular, event-sourced .NET Core application designed to manage personal finances. It uses **Clean Architecture**, **Domain-Driven Design (DDD)**, and **Event Sourcing** to deliver a scalable and maintainable system.
+**ExpenseTracker** is a modular, event-sourced microservices system built with **.NET 8**, leveraging **Clean Architecture**, **DDD**, and **MartenDB** for efficient command/query separation and event persistence.
 
-## 🏗️ Architecture
+## 🧱 Architecture
 
-This project follows **Clean Architecture** principles and is organized into the following layers:
+This project is composed of several services and shared layers:
 
-- **Domain**: Contains core business logic, aggregates, and events.
-- **Application**: Defines use cases, command/query handlers, and application-level services.
-- **Infrastructure**: Handles database access, event storage, and external integrations.
-- **API**: RESTful HTTP interface for client interaction.
+- **ExpenseService** – Manages account creation, updates, deposits, withdrawals, and deletions.
+- **AuditService** – Provides read access to account data for audit purposes.
+- **ExpenseTracker** – Contains shared domain models, application interfaces, and event sourcing utilities.
+
+Each service follows Clean Architecture:
+
+- `Api/`: REST endpoints, Swagger docs
+- `Application/`: Use cases, MediatR handlers, validation
+- `Domain/`: Aggregates, events, enums, exceptions
+- `Infrastructure/`: Persistence, Redis, Marten configuration
 
 ## 📦 Features
 
-- Account creation, update, and soft deletion
-- Deposit and withdrawal functionality
-- Event-sourced account state reconstruction
-- CQRS with MediatR (planned)
-- MartenDB event storage (planned/in-progress)
-- Modular and extensible project structure
+- Event Sourcing via MartenDB
+- CQRS with MediatR
+- Docker-based microservices setup
+- Kong API Gateway for centralized routing
+- Redis integration for caching (optional)
+- Full validation pipeline via FluentValidation
+- OpenAPI documentation via NSwag
 
-## 🧱 Domain Highlights
+## 🧰 Tech Stack
 
-- **AccountAggregate** is the aggregate root, applying and enqueuing events such as `AccountCreatedEvent`, `AccountDepositEvent`, and `AccountWithdrawalEvent`.
-- Events are immutable and drive state transitions.
-- Built-in validation logic ensures consistency (e.g., no update after soft deletion).
+- **.NET 8**, **MediatR**, **FluentValidation**
+- **Marten** (event store)
+- **PostgreSQL**, **Redis**
+- **Docker**, **Kong** (API Gateway)
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download)
-- [PostgreSQL](https://www.postgresql.org/) (optional for event store)
-- [Docker](https://www.docker.com/) (optional for local dev)
+- [.NET 8 SDK](https://dotnet.microsoft.com/)
+- [Docker & Docker Compose](https://docs.docker.com/compose/)
+- [Node.js](https://nodejs.org/) (for NSwag codegen)
 
-### Running the Application
-
-1. Clone the repo:
+### Run All Services
 
 ```bash
-git clone https://github.com/aekoky/ExpenseTracker.git
-cd ExpenseTracker
+docker-compose up --build
 ```
 
-2. Restore dependencies and build:
+Services run on:
 
-```bash
-dotnet restore
-dotnet build
+- `localhost:80/expense/api` → ExpenseService
+- `localhost:80/audit/api` → AuditService
+- `localhost:8001` → Kong Admin API
+
+### Access Swagger UI
+
+Each service generates a Swagger spec using NSwag and serves it at:
+
+- `http://localhost:80/expense/api/swagger`
+- `http://localhost:80/audit/api/swagger`
+
+## 📂 Folder Structure
+
+```
+src/
+├── AuditService/
+│   ├── Api/ | Application/ | Infrastructure/
+├── ExpenseService/
+│   ├── Api/ | Application/ | Infrastructure/
+├── ExpenseTracker/
+│   ├── Api/ | Application/ | Domain/
+Kong/
+  └── declarative/kong.yml
+Postgres/
+  ├── init.sql | postgresql-databases.sh
+docker-compose.yml
 ```
 
-3. Run the application:
+## 🧪 Development Tips
 
-```bash
-dotnet run --project src/ExpenseTracker.API
-```
+- All write operations (create, update, deposit, withdraw, delete) are in `ExpenseService.Application`
+- All read models and projections are updated via Marten's async daemon
+- `AccountAggregate` and `TransactionAggregate` define the domain logic
+- API controllers are in `*.Api/Controllers` with MediatR commands
 
 ## ✅ Roadmap
 
-- [x] Domain-driven event-based account system
-- [ ] Integration with MartenDB for event persistence
-- [ ] CQRS pattern for separation of read/write models
-- [ ] UI interface with Angular or Blazor
-- [ ] Dockerized deployment
-
-## 🧪 Testing
-
-Unit tests for aggregates and application logic are planned using xUnit and FluentAssertions.
-
-## 🧠 Design Principles
-
-- Separation of concerns
-- Single responsibility
-- High cohesion, low coupling
-- Immutable events
-- Testability and maintainability
-
-## 📂 Project Structure
-
-```
-ExpenseTracker/
-├── src/
-│   ├── ExpenseTracker.API/          # API endpoints
-│   ├── ExpenseTracker.Application/  # Application layer
-│   ├── ExpenseTracker.Domain/       # Domain models and events
-│   └── ExpenseTracker.Infrastructure/ # Persistence, services
-├── tests/
-│   └── ExpenseTracker.Tests/        # Unit tests
-```
+- [x] Event-sourced aggregate state
+- [x] AuditService for projections and read models
+- [x] Kong Gateway routing
+- [ ] Advanced authorization and user handling
+- [ ] Frontend (Angular or Blazor)
+- [ ] Deployment pipeline
 
 ## 🤝 Contributing
 
-Contributions are welcome! Feel free to open an issue or submit a pull request.
+Feel free to fork the repo and submit PRs. All feedback is welcome!
 
-## 📄 License
+## 🪪 License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+Licensed under the MIT License.
