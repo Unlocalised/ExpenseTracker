@@ -2,7 +2,7 @@
 
 public class DepositAccountRequest
 {
-    public long CurrentVersion { get; set; }
+    public long ExpectedVersion { get; set; }
 
     public decimal Amount { get; set; }
 }

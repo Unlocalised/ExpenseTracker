@@ -1,4 +1,5 @@
 ﻿using ExpenseTracker.Application.Common.Exceptions;
+using ExpenseService.Application.Models.Accounts;
 using ExpenseTracker.Domain.Transaction;
 using ExpenseTracker.Application.Common;
 using ExpenseTracker.Domain.Enums;
@@ -6,37 +7,42 @@ using MediatR;
 
 namespace ExpenseService.Application.Account.DepositAccount;
 
-public record DepositAccountCommand : IRequest<Guid>
+public record DepositAccountCommand : IRequest<AccountCommandResult>
 {
-    public DepositAccountCommand(Guid accountId, long currentVersion, decimal amount)
+    public DepositAccountCommand(Guid accountId, long expectedVersion, decimal amount)
     {
         AccountId = accountId;
-        CurrentVersion = currentVersion;
+        ExpectedVersion = expectedVersion;
         Amount = amount;
     }
 
     public Guid AccountId { get; set; }
 
-    public long CurrentVersion { get; set; }
+    public long ExpectedVersion { get; set; }
 
     public decimal Amount { get; set; }
 }
 
-public class DepositAccountCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<DepositAccountCommand, Guid>
+public class DepositAccountCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<DepositAccountCommand, AccountCommandResult>
 {
-    public async Task<Guid> Handle(
+    public async Task<AccountCommandResult> Handle(
         DepositAccountCommand request,
         CancellationToken cancellationToken)
     {
         var transactionId = Guid.NewGuid();
         var accountAggregate = await unitOfWork.Accounts.LoadAsync(request.AccountId, cancellationToken) ?? throw new NotFoundException("Account not found");
         accountAggregate.Deposit(request.Amount, transactionId);
-        await unitOfWork.Accounts.SaveAsync(accountAggregate, request.CurrentVersion, cancellationToken);
+        await unitOfWork.Accounts.SaveAsync(accountAggregate, request.ExpectedVersion, cancellationToken);
 
-        var transactionAggregate = new TransactionAggregate(transactionId, request.Amount, TransactionType.Deposit, accountAggregate.Id);
+        var transactionAggregate = new TransactionAggregate(transactionId, request.Amount, TransactionType.Deposit, accountAggregate.Id, DateTime.UtcNow);
         unitOfWork.Transactions.Create(transactionAggregate);
 
         await unitOfWork.CommitAsync(cancellationToken);
-        return transactionId;
+
+        return new AccountCommandResult
+        {
+            AccountId = accountAggregate.Id,
+            NewVersion = accountAggregate.Version
+        };
     }
 }

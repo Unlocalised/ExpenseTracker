@@ -1,15 +1,16 @@
 ﻿using ExpenseTracker.Application.Common;
 using MediatR;
 using ExpenseTracker.Application.Common.Exceptions;
+using ExpenseService.Application.Models.Accounts;
 
 namespace ExpenseService.Application.Account.UpdateAccount;
 
-public record UpdateAccountCommand : IRequest
+public record UpdateAccountCommand : IRequest<AccountCommandResult>
 {
-    public UpdateAccountCommand(Guid id, long currentVersion, string? name, string? number, string? bankName, string? bankPhone, string? bankAddress, bool? enabled)
+    public UpdateAccountCommand(Guid id, long expectedVersion, string? name, string? number, string? bankName, string? bankPhone, string? bankAddress, bool? enabled)
     {
         Id = id;
-        CurrentVersion = currentVersion;
+        ExpectedVersion = expectedVersion;
         Name = name;
         Number = number;
         BankName = bankName;
@@ -20,7 +21,7 @@ public record UpdateAccountCommand : IRequest
 
     public Guid Id { get; set; }
 
-    public long CurrentVersion { get; set; }
+    public long ExpectedVersion { get; set; }
 
     public string? Name { get; set; }
 
@@ -35,9 +36,9 @@ public record UpdateAccountCommand : IRequest
     public bool? Enabled { get; set; }
 }
 
-public class UpdateAccountCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateAccountCommand>
+public class UpdateAccountCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateAccountCommand, AccountCommandResult>
 {
-    public async Task Handle(UpdateAccountCommand request, CancellationToken cancellationToken)
+    public async Task<AccountCommandResult> Handle(UpdateAccountCommand request, CancellationToken cancellationToken)
     {
         var accountAggregate = await unitOfWork.Accounts.LoadAsync(request.Id, cancellationToken) ?? throw new NotFoundException("Account not found");
         accountAggregate.Update(request.Name,
@@ -46,7 +47,13 @@ public class UpdateAccountCommandHandler(IUnitOfWork unitOfWork) : IRequestHandl
              request.BankPhone,
              request.BankAddress,
              request.Enabled);
-        await unitOfWork.Accounts.SaveAsync(accountAggregate, request.CurrentVersion, cancellationToken);
+        await unitOfWork.Accounts.SaveAsync(accountAggregate, request.ExpectedVersion, cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);
+
+        return new AccountCommandResult
+        {
+            AccountId = accountAggregate.Id,
+            NewVersion = accountAggregate.Version
+        };
     }
 }

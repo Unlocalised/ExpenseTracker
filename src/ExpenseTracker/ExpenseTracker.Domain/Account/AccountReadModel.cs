@@ -26,5 +26,5 @@ public class AccountReadModel
 
     public DateTime? DeletedAt { get; set; }
 
-    public long CurrentVersion { get; set; }
+    public long ExpectedVersion { get; set; }
 }

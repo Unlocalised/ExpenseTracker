@@ -27,13 +27,13 @@ public class MartenAccountRepository(IDocumentSession documentSession) : IAccoun
         return await documentSession.Events.AggregateStreamAsync<AccountAggregate>(streamId, token: cancellationToken);
     }
 
-    public async Task SaveAsync(AccountAggregate aggregate, long currentVersion, CancellationToken cancellationToken = default)
+    public async Task SaveAsync(AccountAggregate aggregate, long expectedVersion, CancellationToken cancellationToken = default)
     {
         var streamState = await documentSession.Events.FetchStreamStateAsync(aggregate.Id, cancellationToken) ?? throw new NotFoundException("Account not found");
-        if (streamState.Version != currentVersion)
+        if (streamState.Version != expectedVersion)
             throw new ConcurrencyException(typeof(AccountAggregate), aggregate.Id);
 
         var events = aggregate.DequeueUncommittedEvents();
-        Append(aggregate.Id, currentVersion + events.Length, events);
+        Append(aggregate.Id, expectedVersion + events.Length, events);
     }
 }

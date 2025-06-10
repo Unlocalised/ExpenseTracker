@@ -2,6 +2,8 @@
 
 public abstract class BaseAggregate : BaseEntity
 {
+    public long Version { get; set; }
+
     [NonSerialized] 
     private readonly Queue<BaseEvent> _uncommittedEvents = new();
 

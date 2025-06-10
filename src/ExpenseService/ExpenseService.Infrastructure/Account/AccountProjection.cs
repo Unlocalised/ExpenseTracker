@@ -19,7 +19,7 @@ public class AccountProjection : SingleStreamProjection<AccountReadModel>
             view.BankPhone = data.BankPhone;
             view.BankAddress = data.BankAddress;
             view.Enabled = true;
-            view.CurrentVersion = @event.Version;
+            view.ExpectedVersion = @event.Version;
         });
         ProjectEvent<IEvent<AccountUpdatedEvent>>((view, @event) =>
         {
@@ -32,26 +32,26 @@ public class AccountProjection : SingleStreamProjection<AccountReadModel>
             view.BankAddress = data.BankAddress;
             if (data.Enabled.HasValue)
                 view.Enabled = data.Enabled.Value;
-            view.CurrentVersion = @event.Version;
+            view.ExpectedVersion = @event.Version;
         });
         ProjectEvent<IEvent<AccountDeletedEvent>>((view, @event) =>
         {
             var data = @event.Data;
             view.DeletedAt = data.DeletedAt;
             view.Enabled = false;
-            view.CurrentVersion = @event.Version;
+            view.ExpectedVersion = @event.Version;
         });
         ProjectEvent<IEvent<AccountWithdrawalEvent>>((view, @event) =>
         {
             var data = @event.Data;
             view.Balance -= data.Amount;
-            view.CurrentVersion = @event.Version;
+            view.ExpectedVersion = @event.Version;
         });
         ProjectEvent<IEvent<AccountDepositEvent>>((view, @event) =>
         {
             var data = @event.Data;
             view.Balance += data.Amount;
-            view.CurrentVersion = @event.Version;
+            view.ExpectedVersion = @event.Version;
         });
     }
 

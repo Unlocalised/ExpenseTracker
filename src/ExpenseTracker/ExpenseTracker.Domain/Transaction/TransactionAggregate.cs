@@ -2,7 +2,7 @@
 using ExpenseTracker.Domain.Common;
 using ExpenseTracker.Domain.Enums;
 using ExpenseTracker.Domain.Account.Events;
-using ExpenseTracker.Domain.Account;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Xml.Linq;
 
 namespace ExpenseTracker.Domain.Transaction;
@@ -19,23 +19,13 @@ public class TransactionAggregate : BaseAggregate
 
     public TransactionAggregate()
     {
-
     }
 
-    public TransactionAggregate(Guid id, decimal amount, TransactionType transactionType, Guid accountId)
+    public TransactionAggregate(Guid id, decimal amount, TransactionType transactionType, Guid accountId, DateTime createdAt)
     {
-        var @event = TransactionCreatedEvent.Create(id, DateTime.UtcNow, amount, transactionType, accountId);
+        var @event = TransactionCreatedEvent.Create(id, createdAt, amount, transactionType, accountId);
         Enqueue(@event);
         Apply(@event);
-    }
-
-    public static TransactionAggregate Create(TransactionCreatedEvent @event)
-    {
-        var account = new TransactionAggregate();
-        account.Enqueue(@event);
-        account.Apply(@event);
-
-        return account;
     }
 
     public void Apply(TransactionCreatedEvent @event)
@@ -45,5 +35,7 @@ public class TransactionAggregate : BaseAggregate
         TransactionType = @event.TransactionType;
         AccountId = @event.AccountId;
         CreatedAt = @event.CreatedAt;
+
+        Version++;
     }
 }

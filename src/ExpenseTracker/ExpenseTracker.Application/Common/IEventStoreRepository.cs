@@ -8,7 +8,7 @@ public interface IEventStoreRepository<TA> where TA : BaseAggregate
 
     void Append(Guid streamId, long expectedVersion, params BaseEvent[] @events);
 
-    Task SaveAsync(TA aggregate, long currentVersion, CancellationToken cancellationToken = default);
+    Task SaveAsync(TA aggregate, long expectedVersion, CancellationToken cancellationToken = default);
 
     void Create(TA aggregateRoot);
 }

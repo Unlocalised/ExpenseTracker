@@ -2,7 +2,7 @@
 
 public class UpdateAccountRequest
 {
-    public long CurrentVersion { get; set; }
+    public long ExpectedVersion { get; set; }
 
     public string? Name { get; set; }
 

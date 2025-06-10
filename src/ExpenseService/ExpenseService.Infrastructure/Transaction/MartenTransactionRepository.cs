@@ -20,14 +20,14 @@ public class MartenTransactionRepository(IDocumentSession documentSession) : ITr
         documentSession.Events.Append(streamId, expectedVersion, events);
     }
 
-    public async Task SaveAsync(TransactionAggregate aggregate, long currentVersion, CancellationToken cancellationToken = default)
+    public async Task SaveAsync(TransactionAggregate aggregate, long expectedVersion, CancellationToken cancellationToken = default)
     {
         var streamState = await documentSession.Events.FetchStreamStateAsync(aggregate.Id, cancellationToken) ?? throw new NotFoundException("Transaction not found");
-        if (streamState.Version != currentVersion)
+        if (streamState.Version != expectedVersion)
             throw new ConcurrencyException(typeof(TransactionAggregate), aggregate.Id);
 
         var events = aggregate.DequeueUncommittedEvents();
-        Append(aggregate.Id, currentVersion + events.Length, events);
+        Append(aggregate.Id, expectedVersion + events.Length, events);
     }
 
     public async Task<TransactionAggregate?> LoadAsync(Guid streamId, CancellationToken cancellationToken = default)
