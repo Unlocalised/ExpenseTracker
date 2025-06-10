@@ -8,8 +8,6 @@ public class AccountReadModel
 
     public string Name { get; set; } = string.Empty;
 
-    public decimal OpeningBalance { get; set; }
-
     public decimal Balance { get; set; }
 
     public string? Number { get; set; }
@@ -28,7 +26,5 @@ public class AccountReadModel
 
     public DateTime? DeletedAt { get; set; }
 
-    public long StreamVersion { get; set; }
-
-    public List<TransactionReadModel> Transactions { get; set; } = [];
+    public long CurrentVersion { get; set; }
 }

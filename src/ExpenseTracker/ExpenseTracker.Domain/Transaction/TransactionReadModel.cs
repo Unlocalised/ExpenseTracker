@@ -12,7 +12,5 @@ public class TransactionReadModel
 
     public Guid AccountId { get; set; }
 
-    public string? Number { get; set; }
-
     public DateTime? CreatedAt { get; set; }
 }

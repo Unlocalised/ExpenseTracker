@@ -1,10 +1,7 @@
-﻿using ExpenseTracker.Application.Account;
-using ExpenseTracker.Application.Transaction;
+﻿using ExpenseTracker.Application.Common;
 using ExpenseTracker.Domain.Account;
-using ExpenseTracker.Domain.Account.Events;
 using ExpenseTracker.Domain.Enums;
 using ExpenseTracker.Domain.Transaction;
-using ExpenseTracker.Domain.Transaction.Events;
 using MediatR;
 
 namespace ExpenseService.Application.Account.CreateAccount;
@@ -24,30 +21,28 @@ public record CreateAccountCommand : IRequest<Guid>
     public string? BankAddress { get; set; }
 }
 
-public class CreateAccountCommandHandler(IAccountRepository accountRepository, ITransactionRepository transactionRepository) : IRequestHandler<CreateAccountCommand, Guid>
+public class CreateAccountCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CreateAccountCommand, Guid>
 {
     public async Task<Guid> Handle(
         CreateAccountCommand request,
         CancellationToken cancellationToken)
     {
         var accountAggregate = new AccountAggregate(Guid.NewGuid(),
-                DateTime.Now,
+                DateTime.UtcNow,
                 request.Name,
                 request.Number,
                 request.BankName,
                 request.BankPhone,
                 request.BankAddress);
 
-        if (request.OpeningBalance.HasValue)
+        if (request.OpeningBalance.HasValue && request.OpeningBalance.Value > 0)
         {
-            TransactionAggregate transactionAggregate = TransactionAggregate.Create(
-                TransactionCreatedEvent.Create(Guid.NewGuid(), DateTime.Now, request.OpeningBalance.Value, TransactionType.Deposit, accountAggregate.Id));
+            var transactionAggregate = new TransactionAggregate(Guid.NewGuid(), request.OpeningBalance.Value, TransactionType.Deposit, accountAggregate.Id);
+            unitOfWork.Transactions.Create(transactionAggregate);
             accountAggregate.Deposit(request.OpeningBalance.Value, transactionAggregate.Id);
-            transactionRepository.StartStream(transactionAggregate);
         }
-
-        accountRepository.StartStream(accountAggregate);
-        await accountRepository.SaveChangesAsync(cancellationToken);
+        unitOfWork.Accounts.Create(accountAggregate);
+        await unitOfWork.CommitAsync(cancellationToken);
         return accountAggregate.Id;
     }
 }

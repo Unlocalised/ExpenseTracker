@@ -30,13 +30,6 @@ public class AccountAggregate : BaseAggregate
 
     public AccountAggregate(Guid id, DateTime createdAt, string name, string? number, string? bankName, string? bankPhone, string? bankAddress)
     {
-        Id = id;
-        Name = name;
-        Number = number;
-        BankName = bankName;
-        BankPhone = bankPhone;
-        BankAddress = bankAddress;
-        CreatedAt = createdAt;
         var @event = AccountCreatedEvent.Create(id, createdAt, name, number, bankName, bankPhone, bankAddress);
         Enqueue(@event);
         Apply(@event);
@@ -76,7 +69,7 @@ public class AccountAggregate : BaseAggregate
     {
         if (DeletedAt.HasValue)
             throw new DomainException("Cannot update a deleted account.");
-        var @event = AccountUpdatedEvent.Create(Id, DateTime.Now, name, number, bankName, bankPhone, bankAddress, enabled);
+        var @event = AccountUpdatedEvent.Create(Id, DateTime.UtcNow, name, number, bankName, bankPhone, bankAddress, enabled);
         Enqueue(@event);
         Apply(@event);
     }
@@ -85,7 +78,7 @@ public class AccountAggregate : BaseAggregate
     {
         if (DeletedAt.HasValue)
             return;
-        var @event = AccountDeletedEvent.Create(Id, DateTime.Now);
+        var @event = AccountDeletedEvent.Create(Id, DateTime.UtcNow);
         Enqueue(@event);
         Apply(@event);
     }

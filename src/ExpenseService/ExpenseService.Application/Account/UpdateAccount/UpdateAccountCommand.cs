@@ -1,14 +1,26 @@
-﻿using ExpenseTracker.Domain.Account.Events;
-using ExpenseTracker.Application.Account;
+﻿using ExpenseTracker.Application.Common;
 using MediatR;
+using ExpenseTracker.Application.Common.Exceptions;
 
 namespace ExpenseService.Application.Account.UpdateAccount;
 
 public record UpdateAccountCommand : IRequest
 {
+    public UpdateAccountCommand(Guid id, long currentVersion, string? name, string? number, string? bankName, string? bankPhone, string? bankAddress, bool? enabled)
+    {
+        Id = id;
+        CurrentVersion = currentVersion;
+        Name = name;
+        Number = number;
+        BankName = bankName;
+        BankPhone = bankPhone;
+        BankAddress = bankAddress;
+        Enabled = enabled;
+    }
+
     public Guid Id { get; set; }
 
-    public long Version { get; set; }
+    public long CurrentVersion { get; set; }
 
     public string? Name { get; set; }
 
@@ -23,21 +35,18 @@ public record UpdateAccountCommand : IRequest
     public bool? Enabled { get; set; }
 }
 
-public class UpdateAccountCommandHandler(IAccountRepository accountRepository) : IRequestHandler<UpdateAccountCommand>
+public class UpdateAccountCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateAccountCommand>
 {
     public async Task Handle(UpdateAccountCommand request, CancellationToken cancellationToken)
     {
-        var @event = AccountUpdatedEvent.Create(
-             request.Id,
-             DateTime.Now,
-             request.Name,
+        var accountAggregate = await unitOfWork.Accounts.LoadAsync(request.Id, cancellationToken) ?? throw new NotFoundException("Account not found");
+        accountAggregate.Update(request.Name,
              request.Number,
              request.BankName,
              request.BankPhone,
              request.BankAddress,
              request.Enabled);
-
-        accountRepository.Persist(request.Id, request.Version + 1, @event);
-        await accountRepository.SaveChangesAsync(cancellationToken);
+        await unitOfWork.Accounts.SaveAsync(accountAggregate, request.CurrentVersion, cancellationToken);
+        await unitOfWork.CommitAsync(cancellationToken);
     }
 }

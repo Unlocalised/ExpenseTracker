@@ -239,3 +239,4 @@ _Pvt_Extensions
 /.mfractor
 /src/WebApi/storage/
 /data/
+**/wwwroot/docs/specification.json
