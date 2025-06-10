@@ -1,6 +1,7 @@
-﻿using ExpenseTracker.Domain.Account.Events;
+﻿using System.Xml.Linq;
+using ExpenseTracker.Domain.Account.Events;
 using ExpenseTracker.Domain.Common;
-using MediatR;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ExpenseTracker.Domain.Account;
 
@@ -28,33 +29,11 @@ public class AccountAggregate : BaseAggregate
 
     public AccountAggregate() { }
 
-    public AccountAggregate(Guid id, DateTime createdAt, string name, string? number, string? bankName, string? bankPhone, string? bankAddress)
+    public AccountAggregate(Guid id, string name, string? number, string? bankName, string? bankPhone, string? bankAddress, DateTime createdAt)
     {
-        Id = id;
-        Name = name;
-        Number = number;
-        BankName = bankName;
-        BankPhone = bankPhone;
-        BankAddress = bankAddress;
-        CreatedAt = createdAt;
         var @event = AccountCreatedEvent.Create(id, createdAt, name, number, bankName, bankPhone, bankAddress);
         Enqueue(@event);
         Apply(@event);
-    }
-
-    public static AccountAggregate Create(AccountCreatedEvent @event)
-    {
-        return new AccountAggregate()
-        {
-            Id = @event.Id,
-            BankAddress = @event.BankAddress,
-            BankName = @event.BankName,
-            BankPhone = @event.BankPhone,
-            CreatedAt = @event.CreatedAt,
-            Enabled = true,
-            Name = @event.Name,
-            Number = @event.Number
-        };
     }
 
     public void Withdraw(decimal amount, Guid transactionId)
@@ -76,7 +55,7 @@ public class AccountAggregate : BaseAggregate
     {
         if (DeletedAt.HasValue)
             throw new DomainException("Cannot update a deleted account.");
-        var @event = AccountUpdatedEvent.Create(Id, DateTime.Now, name, number, bankName, bankPhone, bankAddress, enabled);
+        var @event = AccountUpdatedEvent.Create(Id, DateTime.UtcNow, name, number, bankName, bankPhone, bankAddress, enabled);
         Enqueue(@event);
         Apply(@event);
     }
@@ -85,7 +64,7 @@ public class AccountAggregate : BaseAggregate
     {
         if (DeletedAt.HasValue)
             return;
-        var @event = AccountDeletedEvent.Create(Id, DateTime.Now);
+        var @event = AccountDeletedEvent.Create(Id, DateTime.UtcNow);
         Enqueue(@event);
         Apply(@event);
     }
@@ -100,6 +79,8 @@ public class AccountAggregate : BaseAggregate
         BankPhone = @event.BankPhone;
         BankAddress = @event.BankAddress;
         Enabled = true;
+
+        Version++;
     }
 
     public void Apply(AccountUpdatedEvent @event)
@@ -117,21 +98,29 @@ public class AccountAggregate : BaseAggregate
         if (@event.Enabled.HasValue)
             Enabled = @event.Enabled.Value;
         UpdatedAt = @event.UpdatedAt;
+
+        Version++;
     }
 
     public void Apply(AccountDeletedEvent @event)
     {
         Enabled = false;
         DeletedAt = @event.DeletedAt;
+
+        Version++;
     }
 
     public void Apply(AccountWithdrawalEvent @event)
     {
         Balance -= @event.Amount;
+
+        Version++;
     }
 
     public void Apply(AccountDepositEvent @event)
     {
         Balance += @event.Amount;
+
+        Version++;
     }
 }

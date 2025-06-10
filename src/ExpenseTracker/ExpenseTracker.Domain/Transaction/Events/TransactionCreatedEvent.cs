@@ -14,8 +14,6 @@ public record TransactionCreatedEvent : BaseEvent
 
     public Guid AccountId { get; set; }
 
-    public string? Number { get; set; }
-
     public TransactionCreatedEvent() { }
 
     public static TransactionCreatedEvent Create(
@@ -23,14 +21,12 @@ public record TransactionCreatedEvent : BaseEvent
         DateTime createdAt,
         decimal amount,
         TransactionType transactionType,
-        Guid accountId,
-        string? number = null) => new()
+        Guid accountId) => new()
         {
             Id = id,
             CreatedAt = createdAt,
             Amount = amount,
             TransactionType = transactionType,
-            AccountId = accountId,
-            Number = number
+            AccountId = accountId
         };
 }

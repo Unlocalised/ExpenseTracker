@@ -1,15 +1,16 @@
-﻿using ExpenseService.Infrastructure.Account;
-using ExpenseService.Infrastructure.Transaction;
-using ExpenseTracker.Application.Account;
+﻿using ExpenseService.Infrastructure.Transaction;
 using ExpenseTracker.Application.Transaction;
-using ExpenseTracker.Domain.Account;
-using ExpenseTracker.Domain.Transaction;
-using Marten;
-using Marten.Events.Daemon.Resiliency;
-using Marten.Events.Projections;
+using ExpenseService.Infrastructure.Account;
+using ExpenseTracker.Application.Account;
 using Microsoft.Extensions.Configuration;
+using Marten.Events.Daemon.Resiliency;
+using ExpenseTracker.Domain.Account;
 using Microsoft.Extensions.Hosting;
+using Marten.Events.Projections;
 using Weasel.Core;
+using Marten;
+using ExpenseTracker.Application.Common;
+using ExpenseService.Infrastructure.Common;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -39,8 +40,8 @@ public static class ConfigureServices
         })
             .AddAsyncDaemon(DaemonMode.Solo)
             .UseLightweightSessions();
-        services.AddScoped<IAccountRepository, AccountRepository>();
-        services.AddScoped<ITransactionRepository, TransactionRepository>();
+
+        services.AddScoped<IUnitOfWork, MartenUnitOfWork>();
         return services;
     }
 }
