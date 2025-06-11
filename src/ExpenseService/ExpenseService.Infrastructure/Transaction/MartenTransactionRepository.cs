@@ -1,8 +1,5 @@
-﻿using ExpenseTracker.Application.Common.Exceptions;
-using ExpenseTracker.Application.Transaction;
+﻿using ExpenseTracker.Application.Transaction;
 using ExpenseTracker.Domain.Transaction;
-using ExpenseTracker.Domain.Common;
-using Marten.Exceptions;
 using Marten;
 
 namespace ExpenseService.Infrastructure.Transaction;
@@ -14,20 +11,12 @@ public class MartenTransactionRepository(IDocumentSession documentSession) : ITr
         documentSession.Events.StartStream<TransactionAggregate>(aggregateRoot.Id, events);
     }
 
-    public void Append(Guid streamId, long expectedVersion, params BaseEvent[] events)
-    {
-        if (events.Length == 0) return;
-        documentSession.Events.Append(streamId, expectedVersion, events);
-    }
-
     public async Task SaveAsync(TransactionAggregate aggregate, long expectedVersion, CancellationToken cancellationToken = default)
     {
-        var streamState = await documentSession.Events.FetchStreamStateAsync(aggregate.Id, cancellationToken) ?? throw new NotFoundException("Transaction not found");
-        if (streamState.Version != expectedVersion)
-            throw new ConcurrencyException(typeof(TransactionAggregate), aggregate.Id);
-
         var events = aggregate.DequeueUncommittedEvents();
-        Append(aggregate.Id, expectedVersion + events.Length, events);
+        if (events.Length == 0) return;
+        var stream = await documentSession.Events.FetchForWriting<TransactionAggregate>(aggregate.Id, expectedVersion, cancellationToken);
+        stream.AppendMany(events);
     }
 
     public async Task<TransactionAggregate?> LoadAsync(Guid streamId, CancellationToken cancellationToken = default)

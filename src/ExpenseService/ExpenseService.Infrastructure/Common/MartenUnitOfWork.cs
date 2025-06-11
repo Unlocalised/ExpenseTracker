@@ -8,9 +8,12 @@ using Marten;
 namespace ExpenseService.Infrastructure.Common;
 public class MartenUnitOfWork(IDocumentSession documentSession) : IUnitOfWork
 {
-    public IAccountRepository Accounts => new MartenAccountRepository(documentSession);
+    private IAccountRepository? _accountRepository;
+    private ITransactionRepository? _transactionRepository;
 
-    public ITransactionRepository Transactions => new MartenTransactionRepository(documentSession);
+    public IAccountRepository Accounts => _accountRepository ??= new MartenAccountRepository(documentSession);
+
+    public ITransactionRepository Transactions => _transactionRepository ??= new MartenTransactionRepository(documentSession);
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
