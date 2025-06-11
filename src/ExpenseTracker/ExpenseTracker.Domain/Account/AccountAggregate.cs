@@ -1,7 +1,5 @@
-﻿using System.Xml.Linq;
-using ExpenseTracker.Domain.Account.Events;
+﻿using ExpenseTracker.Domain.Account.Events;
 using ExpenseTracker.Domain.Common;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ExpenseTracker.Domain.Account;
 
