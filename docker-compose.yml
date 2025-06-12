@@ -5,8 +5,19 @@ services:
       context: src
       dockerfile: ExpenseService/ExpenseService.Api/Dockerfile
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy 
 
   auditservice:
     image: auditservice
@@ -14,8 +25,19 @@ services:
       context: src
       dockerfile: AuditService/AuditService.Api/Dockerfile
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   kong:
     container_name: kong
@@ -70,7 +92,7 @@ services:
     image: redis
     container_name: redis
     restart: unless-stopped
-    command: redis-server /usr/local/etc/redis/redis.conf
+    command: redis-server
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s

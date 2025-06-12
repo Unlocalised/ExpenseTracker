@@ -10,7 +10,15 @@ public static class ConfigureServices
     {
         services.AddHttpContextAccessor();
 
-        services.AddHealthChecks();
+        var martenConnectionString = configuration.GetConnectionString("Marten");
+        var redisConnectionString = configuration.GetConnectionString("Redis");
+        if (string.IsNullOrEmpty(martenConnectionString))
+            throw new InvalidOperationException("Marten connection string is not configured in settings.");
+        if (string.IsNullOrEmpty(redisConnectionString))
+            throw new InvalidOperationException("Redis connection string is not configured in settings.");
+        services.AddHealthChecks()
+            .AddNpgSql(martenConnectionString)
+            .AddRedis(redisConnectionString);
 
         services.AddControllers()
         .AddJsonOptions(opts => opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter())).AddNewtonsoftJson(setup =>

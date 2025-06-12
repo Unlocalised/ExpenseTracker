@@ -1,12 +1,10 @@
 ﻿using AuditService.Infrastructure.Account;
 using ExpenseTracker.Application.Account;
-using ExpenseTracker.Domain.Account;
-using ExpenseTracker.Domain.Transaction;
-using Marten;
-using Marten.Events.Daemon.Resiliency;
 using Microsoft.Extensions.Configuration;
+using ExpenseTracker.Domain.Account;
 using Microsoft.Extensions.Hosting;
 using Weasel.Core;
+using Marten;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
