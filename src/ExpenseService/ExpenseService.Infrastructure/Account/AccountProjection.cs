@@ -1,11 +1,11 @@
 ﻿using ExpenseTracker.Domain.Account.Events;
 using ExpenseTracker.Domain.Account;
 using Marten.Events.Aggregation;
-using Marten.Events;
+using JasperFx.Events;
 
 namespace ExpenseService.Infrastructure.Account;
 
-public class AccountProjection : SingleStreamProjection<AccountReadModel>
+public class AccountProjection : SingleStreamProjection<AccountReadModel, Guid>
 {
     public AccountProjection()
     {

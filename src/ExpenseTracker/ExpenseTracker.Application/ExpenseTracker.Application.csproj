@@ -8,12 +8,14 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="12.0.0" />
-    <PackageReference Include="MediatR" Version="12.5.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ExpenseTracker.Domain\ExpenseTracker.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="IntegrationEvents\" />
   </ItemGroup>
 
 </Project>

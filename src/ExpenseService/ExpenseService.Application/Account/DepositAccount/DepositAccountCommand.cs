@@ -3,11 +3,10 @@ using ExpenseService.Application.Models.Accounts;
 using ExpenseTracker.Domain.Transaction;
 using ExpenseTracker.Application.Common;
 using ExpenseTracker.Domain.Enums;
-using MediatR;
 
 namespace ExpenseService.Application.Account.DepositAccount;
 
-public record DepositAccountCommand : IRequest<AccountCommandResult>
+public record DepositAccountCommand
 {
     public DepositAccountCommand(Guid accountId, long expectedVersion, decimal amount)
     {
@@ -23,10 +22,11 @@ public record DepositAccountCommand : IRequest<AccountCommandResult>
     public decimal Amount { get; set; }
 }
 
-public class DepositAccountCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<DepositAccountCommand, AccountCommandResult>
+public class DepositAccountCommandHandler
 {
-    public async Task<AccountCommandResult> Handle(
+    public static async Task<AccountCommandResult> Handle(
         DepositAccountCommand request,
+        IUnitOfWork unitOfWork,
         CancellationToken cancellationToken)
     {
         var transactionId = Guid.NewGuid();

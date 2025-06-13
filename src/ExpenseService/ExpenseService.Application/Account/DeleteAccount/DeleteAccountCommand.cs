@@ -1,14 +1,13 @@
 ﻿using ExpenseTracker.Application.Common.Exceptions;
 using ExpenseTracker.Application.Common;
-using MediatR;
 
 namespace ExpenseService.Application.Account.DeleteAccount;
 
-public record DeleteAccountCommand(Guid Id, long ExpectedVersion) : IRequest;
+public record DeleteAccountCommand(Guid Id, long ExpectedVersion);
 
-public class DeleteAccountCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<DeleteAccountCommand>
+public class DeleteAccountCommandHandler
 {
-    public async Task Handle(DeleteAccountCommand request, CancellationToken cancellationToken)
+    public static async Task Handle(DeleteAccountCommand request, IUnitOfWork unitOfWork, CancellationToken cancellationToken)
     {
         var accountAggregate = await unitOfWork.Accounts.LoadAsync(request.Id, cancellationToken) ?? throw new NotFoundException("Account not found");
         accountAggregate.Delete();

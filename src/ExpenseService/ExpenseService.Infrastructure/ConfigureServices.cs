@@ -1,16 +1,15 @@
-﻿using ExpenseService.Infrastructure.Transaction;
-using ExpenseTracker.Application.Transaction;
+﻿using ExpenseService.Application.Account.CreateAccount;
 using ExpenseService.Infrastructure.Account;
-using ExpenseTracker.Application.Account;
+using ExpenseService.Infrastructure.Common;
 using Microsoft.Extensions.Configuration;
-using Marten.Events.Daemon.Resiliency;
+using ExpenseTracker.Application.Common;
 using ExpenseTracker.Domain.Account;
 using Microsoft.Extensions.Hosting;
-using Marten.Events.Projections;
-using Weasel.Core;
+using Wolverine.FluentValidation;
+using Wolverine;
 using Marten;
-using ExpenseTracker.Application.Common;
-using ExpenseService.Infrastructure.Common;
+using JasperFx.Events.Daemon;
+using JasperFx;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -29,7 +28,7 @@ public static class ConfigureServices
             options.Connection(configuration.GetConnectionString("Marten")!);
             // Specify that we want to use STJ as our serializer
             options.UseSystemTextJsonForSerialization();
-            options.Projections.Add<AccountProjection>(ProjectionLifecycle.Inline);
+            options.Projections.Add<AccountProjection>(JasperFx.Events.Projections.ProjectionLifecycle.Inline);
             // If we're running in development mode, let Marten just take care
             // of all necessary schema building and patching behind the scenes
             if (hostEnvironment.IsDevelopment())
@@ -43,5 +42,16 @@ public static class ConfigureServices
 
         services.AddScoped<IUnitOfWork, MartenUnitOfWork>();
         return services;
+    }
+    public static IHostBuilder AddInfrastructureHostBuilder(this IHostBuilder hostBuilder)
+    {
+        hostBuilder.UseWolverine(options =>
+         {
+             options.UseFluentValidation();
+             options.Services.AddSingleton(typeof(IFailureAction<>), typeof(ValidationFailureAction<>));
+             options.Discovery.IncludeAssembly(typeof(CreateAccountCommand).Assembly);
+         });
+
+        return hostBuilder;
     }
 }

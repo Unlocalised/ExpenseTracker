@@ -1,7 +1,5 @@
-﻿using MediatR;
+﻿namespace ExpenseTracker.Domain.Common;
 
-namespace ExpenseTracker.Domain.Common;
-
-public abstract record BaseEvent : INotification
+public abstract record BaseEvent
 {
 }

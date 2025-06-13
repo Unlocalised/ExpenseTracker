@@ -7,13 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Marten" Version="7.40.5" />
+    <PackageReference Include="Marten" Version="8.2.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.5" />
+    <PackageReference Include="WolverineFx" Version="4.2.0" />
+    <PackageReference Include="WolverineFx.FluentValidation" Version="4.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\ExpenseTracker\ExpenseTracker.Application\ExpenseTracker.Application.csproj" />
     <ProjectReference Include="..\..\ExpenseTracker\ExpenseTracker.Domain\ExpenseTracker.Domain.csproj" />
+    <ProjectReference Include="..\ExpenseService.Application\ExpenseService.Application.csproj" />
   </ItemGroup>
 
 </Project>

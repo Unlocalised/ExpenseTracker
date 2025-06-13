@@ -16,7 +16,7 @@ public class AccountsController : ApiControllerBase
     [HttpPost]
     public async Task<ActionResult<Guid>> Create(CreateAccountCommand command, CancellationToken cancellationToken)
     {
-        return await Mediator.Send(command, cancellationToken);
+        return await MessageBus.InvokeAsync<Guid>(command, cancellationToken);
     }
 
     [HttpPut("{id}/deposit")]
@@ -25,7 +25,7 @@ public class AccountsController : ApiControllerBase
     [ProducesDefaultResponseType]
     public async Task<ActionResult<AccountCommandResult>> Deposit(Guid id, [FromBody] DepositAccountRequest depositAccountRequest, CancellationToken cancellationToken)
     {
-        return await Mediator.Send(new DepositAccountCommand(id, depositAccountRequest.ExpectedVersion, depositAccountRequest.Amount), cancellationToken);
+        return await MessageBus.InvokeAsync<AccountCommandResult>(new DepositAccountCommand(id, depositAccountRequest.ExpectedVersion, depositAccountRequest.Amount), cancellationToken);
     }
 
     [HttpPut("{id}/withdraw")]
@@ -34,7 +34,7 @@ public class AccountsController : ApiControllerBase
     [ProducesDefaultResponseType]
     public async Task<ActionResult<AccountCommandResult>> Withdraw(Guid id, [FromBody] WithdrawAccountRequest withdrawAccountRequest, CancellationToken cancellationToken)
     {
-        return await Mediator.Send(new WithdrawAccountCommand(id, withdrawAccountRequest.ExpectedVersion, withdrawAccountRequest.Amount), cancellationToken);
+        return await MessageBus.InvokeAsync<AccountCommandResult>(new WithdrawAccountCommand(id, withdrawAccountRequest.ExpectedVersion, withdrawAccountRequest.Amount), cancellationToken);
     }
 
 
@@ -44,7 +44,7 @@ public class AccountsController : ApiControllerBase
     [ProducesDefaultResponseType]
     public async Task<ActionResult<AccountCommandResult>> Update(Guid id, [FromBody] UpdateAccountRequest updateAccountRequest, CancellationToken cancellationToken)
     {
-        return await Mediator.Send(new UpdateAccountCommand(id, updateAccountRequest.ExpectedVersion, updateAccountRequest.Name, updateAccountRequest.Number, updateAccountRequest.BankName, updateAccountRequest.BankPhone, updateAccountRequest.BankAddress, updateAccountRequest.Enabled), cancellationToken);
+        return await MessageBus.InvokeAsync<AccountCommandResult>(new UpdateAccountCommand(id, updateAccountRequest.ExpectedVersion, updateAccountRequest.Name, updateAccountRequest.Number, updateAccountRequest.BankName, updateAccountRequest.BankPhone, updateAccountRequest.BankAddress, updateAccountRequest.Enabled), cancellationToken);
     }
 
 
@@ -54,7 +54,7 @@ public class AccountsController : ApiControllerBase
     public async Task<IActionResult> Delete(Guid id, long expectedVersion, CancellationToken cancellationToken)
     {
 
-        await Mediator.Send(new DeleteAccountCommand(id, expectedVersion), cancellationToken);
+        await MessageBus.InvokeAsync(new DeleteAccountCommand(id, expectedVersion), cancellationToken);
 
         return NoContent();
     }

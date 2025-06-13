@@ -1,9 +1,13 @@
+using JasperFx;
+using Oakton;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration, builder.Environment);
+builder.Host.AddInfrastructureHostBuilder();
 builder.Services.AddWebApiServices(builder.Configuration);
 builder.Services.AddControllers();
 
@@ -27,3 +31,5 @@ else
 app.MapControllers();
 
 app.Run();
+
+return await app.RunJasperFxCommands(args);

@@ -1,13 +1,12 @@
 ﻿using ExpenseTracker.Application.Common.Exceptions;
+using ExpenseService.Application.Models.Accounts;
 using ExpenseTracker.Application.Common;
 using ExpenseTracker.Domain.Transaction;
 using ExpenseTracker.Domain.Enums;
-using MediatR;
-using ExpenseService.Application.Models.Accounts;
 
 namespace ExpenseService.Application.Account.WithdrawAccount;
 
-public record WithdrawAccountCommand : IRequest<AccountCommandResult>
+public record WithdrawAccountCommand
 {
     public WithdrawAccountCommand(Guid accountId, long expectedVersion, decimal amount)
     {
@@ -23,10 +22,11 @@ public record WithdrawAccountCommand : IRequest<AccountCommandResult>
     public decimal Amount { get; set; }
 }
 
-public class WithdrawAccountCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<WithdrawAccountCommand, AccountCommandResult>
+public class WithdrawAccountCommandHandler
 {
-    public async Task<AccountCommandResult> Handle(
+    public static async Task<AccountCommandResult> Handle(
         WithdrawAccountCommand request,
+        IUnitOfWork unitOfWork,
         CancellationToken cancellationToken)
     {
         var transactionId = Guid.NewGuid();
@@ -38,7 +38,7 @@ public class WithdrawAccountCommandHandler(IUnitOfWork unitOfWork) : IRequestHan
         unitOfWork.Transactions.Create(transactionAggregate);
 
         await unitOfWork.CommitAsync(cancellationToken);
-        
+
         return new AccountCommandResult
         {
             AccountId = accountAggregate.Id,

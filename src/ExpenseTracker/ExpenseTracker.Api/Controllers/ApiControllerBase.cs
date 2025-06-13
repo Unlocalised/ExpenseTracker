@@ -1,7 +1,7 @@
 ﻿using ExpenseTracker.Api.Filters;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Wolverine;
 
 namespace ExpenseTracker.Api.Controllers;
 
@@ -10,7 +10,7 @@ namespace ExpenseTracker.Api.Controllers;
 [Route("[controller]")]
 public abstract class ApiControllerBase : ControllerBase
 {
-    private ISender? _mediator;
+    private IMessageBus? _messageBus;
 
-    protected ISender Mediator => _mediator ??= HttpContext.RequestServices.GetRequiredService<ISender>();
+    protected IMessageBus MessageBus => _messageBus ??= HttpContext.RequestServices.GetRequiredService<IMessageBus>();
 }

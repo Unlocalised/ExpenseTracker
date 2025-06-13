@@ -2,11 +2,10 @@
 using ExpenseTracker.Application.Common;
 using ExpenseTracker.Domain.Account;
 using ExpenseTracker.Domain.Enums;
-using MediatR;
 
 namespace ExpenseService.Application.Account.CreateAccount;
 
-public record CreateAccountCommand : IRequest<Guid>
+public record CreateAccountCommand
 {
     public required string Name { get; set; }
 
@@ -21,10 +20,11 @@ public record CreateAccountCommand : IRequest<Guid>
     public string? BankAddress { get; set; }
 }
 
-public class CreateAccountCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CreateAccountCommand, Guid>
+public class CreateAccountCommandHandler
 {
-    public async Task<Guid> Handle(
+    public static async Task<Guid> Handle(
         CreateAccountCommand request,
+        IUnitOfWork unitOfWork,
         CancellationToken cancellationToken)
     {
         var accountAggregate = new AccountAggregate(Guid.NewGuid(),

@@ -1,14 +1,13 @@
-﻿using MediatR;
-using ExpenseTracker.Domain.Account;
+﻿using ExpenseTracker.Domain.Account;
 using ExpenseTracker.Application.Account;
 
 namespace AuditService.Application.Account.GetAccountById;
 
-public record GetAccountByIdQuery(Guid Id) : IRequest<AccountReadModel>;
+public record GetAccountByIdQuery(Guid Id);
 
-public class GetAccountByIdQueryHandler(IAccountQueryRepository accountQueryRepository) : IRequestHandler<GetAccountByIdQuery, AccountReadModel>
+public class GetAccountByIdQueryHandler
 {
-    public async Task<AccountReadModel> Handle(GetAccountByIdQuery request, CancellationToken cancellationToken)
+    public static async Task<AccountReadModel> Handle(GetAccountByIdQuery request, IAccountQueryRepository accountQueryRepository, CancellationToken cancellationToken)
     {
         var account = await accountQueryRepository.GetAccountById(request.Id, cancellationToken);
         if (account.DeletedAt.HasValue)

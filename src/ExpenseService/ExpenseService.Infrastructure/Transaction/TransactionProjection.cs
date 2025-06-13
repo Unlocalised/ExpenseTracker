@@ -1,12 +1,11 @@
 ﻿using ExpenseTracker.Domain.Transaction;
 using ExpenseTracker.Domain.Transaction.Events;
-using Marten.Events;
 using Marten.Events.Aggregation;
-using Marten.Events.Projections;
+using JasperFx.Events;
 
 namespace ExpenseService.Infrastructure.Transaction;
 
-public class TransactionProjection : SingleStreamProjection<TransactionReadModel>
+public class TransactionProjection : SingleStreamProjection<TransactionReadModel, Guid>
 {
     public TransactionProjection()
     {

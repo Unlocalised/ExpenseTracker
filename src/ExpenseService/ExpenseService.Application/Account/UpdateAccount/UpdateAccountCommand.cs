@@ -1,11 +1,10 @@
-﻿using ExpenseTracker.Application.Common;
-using MediatR;
-using ExpenseTracker.Application.Common.Exceptions;
+﻿using ExpenseTracker.Application.Common.Exceptions;
 using ExpenseService.Application.Models.Accounts;
+using ExpenseTracker.Application.Common;
 
 namespace ExpenseService.Application.Account.UpdateAccount;
 
-public record UpdateAccountCommand : IRequest<AccountCommandResult>
+public record UpdateAccountCommand
 {
     public UpdateAccountCommand(Guid id, long expectedVersion, string? name, string? number, string? bankName, string? bankPhone, string? bankAddress, bool? enabled)
     {
@@ -36,9 +35,9 @@ public record UpdateAccountCommand : IRequest<AccountCommandResult>
     public bool? Enabled { get; set; }
 }
 
-public class UpdateAccountCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateAccountCommand, AccountCommandResult>
+public class UpdateAccountCommandHandler
 {
-    public async Task<AccountCommandResult> Handle(UpdateAccountCommand request, CancellationToken cancellationToken)
+    public static async Task<AccountCommandResult> Handle(UpdateAccountCommand request, IUnitOfWork unitOfWork, CancellationToken cancellationToken)
     {
         var accountAggregate = await unitOfWork.Accounts.LoadAsync(request.Id, cancellationToken) ?? throw new NotFoundException("Account not found");
         accountAggregate.Update(request.Name,
