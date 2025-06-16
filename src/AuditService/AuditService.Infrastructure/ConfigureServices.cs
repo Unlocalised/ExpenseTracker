@@ -1,15 +1,16 @@
 ﻿using AuditService.Application.Account.GetAccountById;
+using AuditService.Domain.Account;
 using AuditService.Infrastructure.Account;
-using ExpenseTracker.Application.Account;
-using Microsoft.Extensions.Configuration;
 using AuditService.Infrastructure.Common;
-using ExpenseTracker.Domain.Account;
-using Microsoft.Extensions.Hosting;
-using Wolverine.FluentValidation;
-using Weasel.Core;
-using Wolverine;
-using Marten;
+using AuditService.Infrastructure.Transaction;
 using JasperFx;
+using JasperFx.Events.Daemon;
+using Marten;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Wolverine;
+using Wolverine.FluentValidation;
+using Wolverine.RabbitMQ;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -35,8 +36,12 @@ public static class ConfigureServices
             {
                 options.AutoCreateSchemaObjects = AutoCreate.All;
             }
-            options.Schema.For<AccountAggregate>().UseOptimisticConcurrency(true);
-        }).UseLightweightSessions();
+            options.Projections.Add<AccountProjection>(JasperFx.Events.Projections.ProjectionLifecycle.Async);
+            options.Projections.Add<TransactionProjection>(JasperFx.Events.Projections.ProjectionLifecycle.Async);
+
+        })
+            .AddAsyncDaemon(DaemonMode.Solo)
+            .UseLightweightSessions();
         services.AddScoped<IAccountQueryRepository, AccountQueryRepository>();
         return services;
     }
@@ -44,10 +49,18 @@ public static class ConfigureServices
     {
         hostBuilder.UseWolverine(options =>
         {
-            options.Durability.Mode = DurabilityMode.MediatorOnly;
             options.UseFluentValidation();
             options.Services.AddSingleton(typeof(IFailureAction<>), typeof(ValidationFailureAction<>));
             options.Discovery.IncludeAssembly(typeof(GetAccountByIdQuery).Assembly);
+            options.UseRabbitMqUsingNamedConnection("RabbitMQ")
+             .AutoProvision();
+
+            options.ListenToRabbitQueue("Account", q =>
+            {
+                q.PurgeOnStartup = true;
+                q.TimeToLive(TimeSpan.FromMinutes(5));
+            });
+            options.Policies.UseDurableInboxOnAllListeners();
         });
 
         return hostBuilder;

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
-using ZymLabs.NSwag.FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using ZymLabs.NSwag.FluentValidation;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

@@ -1,5 +1,4 @@
-﻿using ExpenseTracker.Application.Account;
-using ExpenseTracker.Domain.Account;
+﻿using AuditService.Domain.Account;
 
 namespace AuditService.Application.Account.GetAccounts;
 

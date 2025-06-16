@@ -1,12 +1,13 @@
-﻿using ExpenseService.Infrastructure.Account;
+﻿using ExpenseService.Application.Common;
+using ExpenseService.Domain.Account;
+using ExpenseService.Domain.Transaction;
+using ExpenseService.Infrastructure.Account;
 using ExpenseService.Infrastructure.Transaction;
-using ExpenseTracker.Application.Account;
-using ExpenseTracker.Application.Common;
-using ExpenseTracker.Application.Transaction;
 using Marten;
+using Wolverine;
 
 namespace ExpenseService.Infrastructure.Common;
-public class MartenUnitOfWork(IDocumentSession documentSession) : IUnitOfWork
+public class MartenUnitOfWork(IDocumentSession documentSession, IMessageContext messageContext) : IUnitOfWork
 {
     private IAccountRepository? _accountRepository;
     private ITransactionRepository? _transactionRepository;
@@ -19,6 +20,7 @@ public class MartenUnitOfWork(IDocumentSession documentSession) : IUnitOfWork
     {
         await documentSession.SaveChangesAsync(cancellationToken);
     }
+    public async Task PublishAsync<T>(T message) => await messageContext.PublishAsync(message);
 
     public void Dispose() => documentSession.Dispose();
 }

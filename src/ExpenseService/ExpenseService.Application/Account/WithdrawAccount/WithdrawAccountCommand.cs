@@ -1,8 +1,9 @@
-﻿using ExpenseTracker.Application.Common.Exceptions;
+﻿using ExpenseService.Application.Common;
 using ExpenseService.Application.Models.Accounts;
-using ExpenseTracker.Application.Common;
-using ExpenseTracker.Domain.Transaction;
-using ExpenseTracker.Domain.Enums;
+using ExpenseService.Domain.Transaction;
+using ExpenseTracker.Application.Common.Exceptions;
+using ExpenseTracker.Contracts.Account;
+using ExpenseTracker.Contracts.Enums;
 
 namespace ExpenseService.Application.Account.WithdrawAccount;
 
@@ -34,9 +35,16 @@ public class WithdrawAccountCommandHandler
         accountAggregate.Withdraw(request.Amount, transactionId);
         await unitOfWork.Accounts.SaveAsync(accountAggregate, request.ExpectedVersion, cancellationToken);
 
-        var transactionAggregate = new TransactionAggregate(transactionId, request.Amount, TransactionType.Withdraw, accountAggregate.Id, DateTime.UtcNow);
+        var transactionAggregate = new TransactionAggregate(transactionId, request.Amount, TransactionType.Withdraw, accountAggregate.Id);
         unitOfWork.Transactions.Create(transactionAggregate);
-
+        if (accountAggregate.UpdatedAt.HasValue)
+            await unitOfWork.PublishAsync(new AccountBalanceUpdatedIntegrationEvent
+            {
+                Id = accountAggregate.Id,
+                Balance = accountAggregate.Balance,
+                UpdatedAt = accountAggregate.UpdatedAt.Value,
+                ExpectedVersion = accountAggregate.Version
+            });
         await unitOfWork.CommitAsync(cancellationToken);
 
         return new AccountCommandResult

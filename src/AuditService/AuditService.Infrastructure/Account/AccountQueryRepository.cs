@@ -1,6 +1,5 @@
-﻿using ExpenseTracker.Application.Account;
+﻿using AuditService.Domain.Account;
 using ExpenseTracker.Application.Common.Exceptions;
-using ExpenseTracker.Domain.Account;
 using Marten;
 
 namespace AuditService.Infrastructure.Account;

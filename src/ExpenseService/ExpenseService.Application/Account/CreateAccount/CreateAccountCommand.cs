@@ -1,7 +1,9 @@
-﻿using ExpenseTracker.Domain.Transaction;
-using ExpenseTracker.Application.Common;
-using ExpenseTracker.Domain.Account;
-using ExpenseTracker.Domain.Enums;
+﻿using ExpenseService.Application.Common;
+using ExpenseService.Application.Models.Accounts;
+using ExpenseService.Domain.Account;
+using ExpenseService.Domain.Transaction;
+using ExpenseTracker.Contracts.Account;
+using ExpenseTracker.Contracts.Enums;
 
 namespace ExpenseService.Application.Account.CreateAccount;
 
@@ -22,7 +24,7 @@ public record CreateAccountCommand
 
 public class CreateAccountCommandHandler
 {
-    public static async Task<Guid> Handle(
+    public static async Task<AccountCommandResult> Handle(
         CreateAccountCommand request,
         IUnitOfWork unitOfWork,
         CancellationToken cancellationToken)
@@ -32,18 +34,36 @@ public class CreateAccountCommandHandler
                 request.Number,
                 request.BankName,
                 request.BankPhone,
-                request.BankAddress,
-                DateTime.UtcNow);
+                request.BankAddress);
 
         if (request.OpeningBalance.HasValue && request.OpeningBalance.Value > 0)
         {
-            var transactionAggregate = new TransactionAggregate(Guid.NewGuid(), request.OpeningBalance.Value, TransactionType.Deposit, accountAggregate.Id, DateTime.UtcNow);
+            var transactionAggregate = new TransactionAggregate(Guid.NewGuid(),
+                request.OpeningBalance.Value,
+                TransactionType.Deposit,
+                accountAggregate.Id);
             unitOfWork.Transactions.Create(transactionAggregate);
             accountAggregate.Deposit(request.OpeningBalance.Value, transactionAggregate.Id);
         }
         unitOfWork.Accounts.Create(accountAggregate);
+        await unitOfWork.PublishAsync(new AccountCreatedIntegrationEvent
+        {
+            Id = accountAggregate.Id,
+            Balance = accountAggregate.Balance,
+            BankName = accountAggregate.BankName,
+            BankPhone = accountAggregate.BankPhone,
+            BankAddress = accountAggregate.BankAddress,
+            CreatedAt = accountAggregate.CreatedAt,
+            ExpectedVersion = accountAggregate.Version,
+            Name = accountAggregate.Name,
+            Number = accountAggregate.Number
+        });
         await unitOfWork.CommitAsync(cancellationToken);
 
-        return accountAggregate.Id;
+        return new AccountCommandResult
+        {
+            AccountId = accountAggregate.Id,
+            NewVersion = accountAggregate.Version
+        };
     }
 }

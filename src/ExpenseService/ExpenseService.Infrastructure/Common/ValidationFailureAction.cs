@@ -1,6 +1,6 @@
 ﻿using ExpenseTracker.Application.Common.Exceptions;
-using Wolverine.FluentValidation;
 using FluentValidation.Results;
+using Wolverine.FluentValidation;
 
 namespace ExpenseService.Infrastructure.Common;
 internal class ValidationFailureAction<T> : IFailureAction<T>

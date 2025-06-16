@@ -16,6 +16,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
       redis:
         condition: service_healthy 
 
@@ -36,9 +38,10 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
       redis:
         condition: service_healthy
-
   kong:
     container_name: kong
     image: kong:3.9.0
@@ -54,7 +57,7 @@ services:
       KONG_PROXY_ACCESS_LOG: /dev/stdout
       KONG_PROXY_ERROR_LOG: /dev/stderr
       KONG_DECLARATIVE_CONFIG: "/etc/kong/kong.yml"
-      KONG_PASSWORD: LUUcvHJHv22GE7e
+      KONG_PASSWORD: ${KONG_PASSWORD:-LUUcvHJHv22GE7e}
     healthcheck:
       test: [ "CMD", "kong", "health" ]
       interval: 10s
@@ -81,12 +84,32 @@ services:
       timeout: 5s
       retries: 5
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: LUUcvHJHv22GE7e
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-LUUcvHJHv22GE7e}
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
       - ./postgres/postgresql-databases.sh:/docker-entrypoint-initdb.d/postgresql-databases.sh
+
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: rabbitmq
+    restart: unless-stopped
+    ports:
+      - 5672:5672
+      - 15672:15672
+      - 6379:6379
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-rabbitmq}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-LUUcvHJHv22GE7e}
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./data/rabbitmq/lib:/var/lib/rabbitmq/
+      - ./data/rabbitmq/log:/var/log/rabbitmq
 
   redis:
     image: redis

@@ -1,6 +1,7 @@
-﻿using ExpenseTracker.Application.Common.Exceptions;
+﻿using ExpenseService.Application.Common;
 using ExpenseService.Application.Models.Accounts;
-using ExpenseTracker.Application.Common;
+using ExpenseTracker.Application.Common.Exceptions;
+using ExpenseTracker.Contracts.Account;
 
 namespace ExpenseService.Application.Account.UpdateAccount;
 
@@ -47,6 +48,19 @@ public class UpdateAccountCommandHandler
              request.BankAddress,
              request.Enabled);
         await unitOfWork.Accounts.SaveAsync(accountAggregate, request.ExpectedVersion, cancellationToken);
+        if (accountAggregate.UpdatedAt.HasValue)
+            await unitOfWork.PublishAsync(new AccountUpdatedIntegrationEvent
+            {
+                Id = accountAggregate.Id,
+                BankName = accountAggregate.BankName,
+                BankPhone = accountAggregate.BankPhone,
+                BankAddress = accountAggregate.BankAddress,
+                UpdatedAt = accountAggregate.UpdatedAt.Value,
+                ExpectedVersion = accountAggregate.Version,
+                Name = accountAggregate.Name,
+                Number = accountAggregate.Number,
+                Enabled = accountAggregate.Enabled
+            });
         await unitOfWork.CommitAsync(cancellationToken);
 
         return new AccountCommandResult

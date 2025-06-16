@@ -1,5 +1,4 @@
-﻿using ExpenseTracker.Application.Transaction;
-using ExpenseTracker.Domain.Transaction;
+﻿using ExpenseService.Domain.Transaction;
 using Marten;
 
 namespace ExpenseService.Infrastructure.Transaction;

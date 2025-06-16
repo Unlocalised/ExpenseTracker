@@ -14,9 +14,9 @@ namespace ExpenseService.Api.Controllers;
 public class AccountsController : ApiControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<Guid>> Create(CreateAccountCommand command, CancellationToken cancellationToken)
+    public async Task<ActionResult<AccountCommandResult>> Create(CreateAccountCommand command, CancellationToken cancellationToken)
     {
-        return await MessageBus.InvokeAsync<Guid>(command, cancellationToken);
+        return await MessageBus.InvokeAsync<AccountCommandResult>(command, cancellationToken);
     }
 
     [HttpPut("{id}/deposit")]

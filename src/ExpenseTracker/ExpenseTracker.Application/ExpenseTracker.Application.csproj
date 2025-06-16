@@ -11,11 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ExpenseTracker.Domain\ExpenseTracker.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="IntegrationEvents\" />
+    <ProjectReference Include="..\ExpenseTracker.BuildingBlocks\ExpenseTracker.BuildingBlocks.csproj" />
   </ItemGroup>
 
 </Project>

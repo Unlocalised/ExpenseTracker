@@ -1,8 +1,8 @@
 ﻿
 using AuditService.Application.Account.GetAccountById;
 using AuditService.Application.Account.GetAccounts;
+using AuditService.Domain.Account;
 using ExpenseTracker.Api.Controllers;
-using ExpenseTracker.Domain.Account;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuditService.Api.Controllers;
