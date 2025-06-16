@@ -1,103 +1,94 @@
-# ExpenseTracker 🧾
+# ExpenseTracker
 
-**ExpenseTracker** is a modular, event-sourced microservices system built with **.NET 8**, leveraging **Clean Architecture**, **DDD**, and **MartenDB** for efficient command/query separation and event persistence.
+**ExpenseTracker** is a distributed, event-driven financial microservices system built with modern .NET technologies, designed for scalability, maintainability, and clear separation of concerns.
 
-## 🧱 Architecture
+## 🧠 Core Concepts
 
-This project is composed of several services and shared layers:
+- **Microservices**: Split between `ExpenseService` (write side) and `AuditService` (read side)
+- **Event Sourcing**: Persist events using **Marten** over PostgreSQL
+- **CQRS**: Clear segregation of command and query responsibilities
+- **Async Messaging**: Built with **Wolverine** and **RabbitMQ** for robust, durable inter-service communication
+- **API Gateway**: Centralized routing using **Kong Gateway**
+- **Dockerized**: All services can be run in containers using Docker Compose
 
-- **ExpenseService** – Manages account creation, updates, deposits, withdrawals, and deletions.
-- **AuditService** – Provides read access to account data for audit purposes.
-- **ExpenseTracker** – Contains shared domain models, application interfaces, and event sourcing utilities.
+## 📁 Project Structure
 
-Each service follows Clean Architecture:
+```
+src/
+├── ExpenseService/       # Command side with full CRUD logic and event publishing
+├── AuditService/         # Read side with Marten projections and async daemon
+├── ExpenseTracker/       # Shared contracts, common abstractions, and API base
+└── Kong/                 # Kong gateway declarative config
+```
 
-- `Api/`: REST endpoints, Swagger docs
-- `Application/`: Use cases, MediatR handlers, validation
-- `Domain/`: Aggregates, events, enums, exceptions
-- `Infrastructure/`: Persistence, Redis, Marten configuration
+## ⚙️ Technologies
 
-## 📦 Features
-
-- Event Sourcing via MartenDB
-- CQRS with MediatR
-- Docker-based microservices setup
-- Kong API Gateway for centralized routing
-- Redis integration for caching (optional)
-- Full validation pipeline via FluentValidation
-- OpenAPI documentation via NSwag
-
-## 🧰 Tech Stack
-
-- **.NET 8**, **MediatR**, **FluentValidation**
-- **Marten** (event store)
-- **PostgreSQL**, **Redis**
-- **Docker**, **Kong** (API Gateway)
+- [.NET 8](https://dotnet.microsoft.com)
+- [Marten](https://martendb.io)
+- [Wolverine](https://wolverine.netlify.app)
+- [RabbitMQ](https://www.rabbitmq.com)
+- [PostgreSQL](https://www.postgresql.org)
+- [Redis](https://redis.io)
+- [Kong Gateway](https://konghq.com/kong/)
+- [Docker Compose](https://docs.docker.com/compose/)
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/)
-- [Docker & Docker Compose](https://docs.docker.com/compose/)
-- [Node.js](https://nodejs.org/) (for NSwag codegen)
+- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- [Docker](https://www.docker.com/)
+- [Kong CLI](https://docs.konghq.com/gateway/latest/kong-enterprise/kong-manager/kong-manager-cli/)
 
-### Run All Services
+### Run with Docker
 
 ```bash
-docker-compose up --build
+git clone https://github.com/aekoky/ExpenseTracker.git
+cd ExpenseTracker
+docker compose up --build
 ```
 
-Services run on:
+This starts:
+- Kong Gateway
+- PostgreSQL
+- Redis
+- RabbitMQ
+- ExpenseService (command API)
+- AuditService (query API)
 
-- `localhost:80/expense/api` → ExpenseService
-- `localhost:80/audit/api` → AuditService
-- `localhost:8001` → Kong Admin API
+### Test the APIs
 
-### Access Swagger UI
+Once up, access:
 
-Each service generates a Swagger spec using NSwag and serves it at:
+- ExpenseService: http://localhost:8080/expense/api/docs
+- AuditService: http://localhost:8080/audit/api/docs
 
-- `http://localhost:80/expense/api/swagger`
-- `http://localhost:80/audit/api/swagger`
+You can create/update/delete accounts from the `ExpenseService`, and verify read projections from the `AuditService`.
 
-## 📂 Folder Structure
+## 🧪 Development & Debugging
 
-```
-src/
-├── AuditService/
-│   ├── Api/ | Application/ | Infrastructure/
-├── ExpenseService/
-│   ├── Api/ | Application/ | Infrastructure/
-├── ExpenseTracker/
-│   ├── Api/ | Application/ | Domain/
-Kong/
-  └── declarative/kong.yml
-Postgres/
-  ├── init.sql | postgresql-databases.sh
-docker-compose.yml
+To run locally via Visual Studio or CLI:
+
+```bash
+dotnet build
+dotnet run --project src/ExpenseService/ExpenseService.Api
+dotnet run --project src/AuditService/AuditService.Api
 ```
 
-## 🧪 Development Tips
+Make sure PostgreSQL, Redis, and RabbitMQ are running (or use the docker setup).
 
-- All write operations (create, update, deposit, withdraw, delete) are in `ExpenseService.Application`
-- All read models and projections are updated via Marten's async daemon
-- `AccountAggregate` and `TransactionAggregate` define the domain logic
-- API controllers are in `*.Api/Controllers` with MediatR commands
+## ✨ Features
 
-## ✅ Roadmap
+- Strongly typed integration events
+- Durable inbox for message processing
+- Event projections using Marten's async daemon
+- FluentValidation with Wolverine
+- Kong routing via declarative YAML
 
-- [x] Event-sourced aggregate state
-- [x] AuditService for projections and read models
-- [x] Kong Gateway routing
-- [ ] Advanced authorization and user handling
-- [ ] Frontend (Angular or Blazor)
-- [ ] Deployment pipeline
+## 📜 License
 
-## 🤝 Contributing
+This project is open-sourced under the MIT License.
 
-Feel free to fork the repo and submit PRs. All feedback is welcome!
+---
 
-## 🪪 License
-
-Licensed under the MIT License.
+Feel free to open issues, fork the repo, and suggest improvements. Contributions welcome! 🚀
