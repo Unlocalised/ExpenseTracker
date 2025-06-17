@@ -8,7 +8,6 @@ public class GetAccountByIdQueryHandler
 {
     public static async Task<AccountReadModel> Handle(GetAccountByIdQuery request, IAccountQueryRepository accountQueryRepository, CancellationToken cancellationToken)
     {
-        var account = await accountQueryRepository.GetAccountById(request.Id, cancellationToken);
-        return account.DeletedAt.HasValue ? throw new InvalidOperationException("Account already deleted") : account;
+        return await accountQueryRepository.GetAccountByIdAsync(request.Id, cancellationToken);
     }
 }

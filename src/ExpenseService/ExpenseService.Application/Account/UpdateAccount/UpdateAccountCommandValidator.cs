@@ -6,7 +6,7 @@ public class UpdateAccountCommandValidator : AbstractValidator<UpdateAccountComm
 {
     public UpdateAccountCommandValidator()
     {
-        RuleFor(updateAccountCommand => updateAccountCommand.Name).NotEmpty().MaximumLength(255);
+        RuleFor(updateAccountCommand => updateAccountCommand.Name).MaximumLength(255);
 
         RuleFor(updateAccountCommand => updateAccountCommand.BankName).MaximumLength(1500);
     }

@@ -37,13 +37,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpenseTracker.Application"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpenseTracker.Api", "src\ExpenseTracker\ExpenseTracker.Api\ExpenseTracker.Api.csproj", "{630FF588-D308-4FBA-9E62-44FC1D45091E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseService.Domain", "src\ExpenseService\ExpenseService.Domain\ExpenseService.Domain.csproj", "{C084BEFA-DABC-415C-8D81-29A9DB3FF85C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpenseService.Domain", "src\ExpenseService\ExpenseService.Domain\ExpenseService.Domain.csproj", "{C084BEFA-DABC-415C-8D81-29A9DB3FF85C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseTracker.BuildingBlocks", "src\ExpenseTracker\ExpenseTracker.BuildingBlocks\ExpenseTracker.BuildingBlocks.csproj", "{2FE4ACDD-64FB-40C3-B542-FA49587CA76C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpenseTracker.BuildingBlocks", "src\ExpenseTracker\ExpenseTracker.BuildingBlocks\ExpenseTracker.BuildingBlocks.csproj", "{2FE4ACDD-64FB-40C3-B542-FA49587CA76C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuditService.Domain", "src\AuditService\AuditService.Domain\AuditService.Domain.csproj", "{3882309D-617F-4F42-B351-CBCC27398842}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuditService.Domain", "src\AuditService\AuditService.Domain\AuditService.Domain.csproj", "{3882309D-617F-4F42-B351-CBCC27398842}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseTracker.Contracts", "src\ExpenseTracker\ExpenseTracker.Contracts\ExpenseTracker.Contracts.csproj", "{6F7533FF-AA2E-49B2-B6B3-A5962929AE97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpenseTracker.Contracts", "src\ExpenseTracker\ExpenseTracker.Contracts\ExpenseTracker.Contracts.csproj", "{6F7533FF-AA2E-49B2-B6B3-A5962929AE97}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F7AFAFC4-33CA-4B36-BA0D-E4CB767AC232}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpenseService.UnitTests", "tests\ExpenseService.UnitTests\ExpenseService.UnitTests.csproj", "{9F0A6710-5E00-4FF3-8808-34B0C8558801}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuditService.UnitTests", "tests\AuditService.UnitTests\AuditService.UnitTests.csproj", "{0E1EE76C-4CF1-4D65-9509-5224B1039768}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,6 +109,14 @@ Global
 		{6F7533FF-AA2E-49B2-B6B3-A5962929AE97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F7533FF-AA2E-49B2-B6B3-A5962929AE97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F7533FF-AA2E-49B2-B6B3-A5962929AE97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F0A6710-5E00-4FF3-8808-34B0C8558801}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F0A6710-5E00-4FF3-8808-34B0C8558801}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F0A6710-5E00-4FF3-8808-34B0C8558801}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F0A6710-5E00-4FF3-8808-34B0C8558801}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E1EE76C-4CF1-4D65-9509-5224B1039768}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E1EE76C-4CF1-4D65-9509-5224B1039768}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E1EE76C-4CF1-4D65-9509-5224B1039768}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E1EE76C-4CF1-4D65-9509-5224B1039768}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -123,6 +137,8 @@ Global
 		{2FE4ACDD-64FB-40C3-B542-FA49587CA76C} = {1105AAF2-B11D-40C1-9FFD-394FE84BCD3A}
 		{3882309D-617F-4F42-B351-CBCC27398842} = {0EFD3229-E13A-4E0F-ADEE-233B3BE8E8F3}
 		{6F7533FF-AA2E-49B2-B6B3-A5962929AE97} = {1105AAF2-B11D-40C1-9FFD-394FE84BCD3A}
+		{9F0A6710-5E00-4FF3-8808-34B0C8558801} = {F7AFAFC4-33CA-4B36-BA0D-E4CB767AC232}
+		{0E1EE76C-4CF1-4D65-9509-5224B1039768} = {F7AFAFC4-33CA-4B36-BA0D-E4CB767AC232}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3CB609D9-5D54-4C11-A371-DAAC8B74E430}

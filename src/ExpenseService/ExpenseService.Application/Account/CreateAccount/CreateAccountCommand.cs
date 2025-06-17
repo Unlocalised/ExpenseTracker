@@ -1,9 +1,9 @@
-﻿using ExpenseService.Application.Common;
-using ExpenseService.Application.Models.Accounts;
-using ExpenseService.Domain.Account;
+﻿using ExpenseService.Application.Models.Accounts;
 using ExpenseService.Domain.Transaction;
+using ExpenseService.Application.Common;
 using ExpenseTracker.Contracts.Account;
 using ExpenseTracker.Contracts.Enums;
+using ExpenseService.Domain.Account;
 
 namespace ExpenseService.Application.Account.CreateAccount;
 
@@ -29,12 +29,13 @@ public class CreateAccountCommandHandler
         IUnitOfWork unitOfWork,
         CancellationToken cancellationToken)
     {
-        var accountAggregate = new AccountAggregate(Guid.NewGuid(),
-                request.Name,
-                request.Number,
-                request.BankName,
-                request.BankPhone,
-                request.BankAddress);
+        var accountAggregate = new AccountAggregate(
+            Guid.NewGuid(),
+            request.Name,
+            request.Number,
+            request.BankName,
+            request.BankPhone,
+            request.BankAddress);
 
         if (request.OpeningBalance.HasValue && request.OpeningBalance.Value > 0)
         {

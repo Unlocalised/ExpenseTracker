@@ -110,6 +110,8 @@ public class AccountAggregate : BaseAggregate
 
     public void Apply(AccountWithdrawalEvent @event)
     {
+        if (Balance < @event.Amount)
+            throw new DomainException("Insufficient funds available");
         Balance -= @event.Amount;
         UpdatedAt = @event.UpdatedAt;
 

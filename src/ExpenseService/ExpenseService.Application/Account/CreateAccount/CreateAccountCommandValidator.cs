@@ -6,8 +6,10 @@ public class CreateAccountCommandValidator : AbstractValidator<CreateAccountComm
 {
     public CreateAccountCommandValidator()
     {
-        RuleFor(createAccountCommand => createAccountCommand.Name).MaximumLength(255);
+        RuleFor(createAccountCommand => createAccountCommand.Name).NotEmpty().MaximumLength(255);
 
         RuleFor(createAccountCommand => createAccountCommand.BankName).MaximumLength(1500);
+
+        RuleFor(createAccountCommand => createAccountCommand.OpeningBalance).GreaterThan(0).When(createAccountCommand => createAccountCommand.OpeningBalance.HasValue);
     }
 }

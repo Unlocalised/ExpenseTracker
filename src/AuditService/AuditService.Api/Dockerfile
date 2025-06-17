@@ -16,7 +16,6 @@ WORKDIR /src
 COPY ["AuditService/AuditService.Api/AuditService.Api.csproj", "AuditService/AuditService.Api/"]
 COPY ["AuditService/AuditService.Infrastructure/AuditService.Infrastructure.csproj", "AuditService/AuditService.Infrastructure/"]
 COPY ["ExpenseTracker/ExpenseTracker.Application/ExpenseTracker.Application.csproj", "ExpenseTracker/ExpenseTracker.Application/"]
-COPY ["ExpenseTracker/ExpenseTracker.Domain/ExpenseTracker.Domain.csproj", "ExpenseTracker/ExpenseTracker.Domain/"]
 COPY ["ExpenseTracker/ExpenseTracker.Api/ExpenseTracker.Api.csproj", "ExpenseTracker/ExpenseTracker.Api/"]
 COPY ["AuditService/AuditService.Application/AuditService.Application.csproj", "AuditService/AuditService.Application/"]
 RUN dotnet restore "./AuditService/AuditService.Api/AuditService.Api.csproj"
