@@ -3,7 +3,7 @@ using ExpenseService.Domain.Transaction.Events;
 
 namespace ExpenseService.UnitTests.Domain;
 
-public class TransactionUnitTest
+public class TransactionAggregateTests
 {
     [Fact]
     public void Create_ShouldCreateAndApplyAndEnqueueEvent()

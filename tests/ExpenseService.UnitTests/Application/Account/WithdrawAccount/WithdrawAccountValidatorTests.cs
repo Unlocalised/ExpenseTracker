@@ -3,7 +3,7 @@ using FluentValidation.TestHelper;
 
 namespace ExpenseService.UnitTests.Application.Account.WithdrawAccount;
 
-public class WithdrawAccountValidatorUnitTest
+public class WithdrawAccountValidatorTests
 {
     private readonly WithdrawAccountCommandValidator _validator = new();
 

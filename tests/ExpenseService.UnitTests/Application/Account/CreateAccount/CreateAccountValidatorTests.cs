@@ -3,7 +3,7 @@ using FluentValidation.TestHelper;
 
 namespace ExpenseService.UnitTests.Application.Account.CreateAccount;
 
-public class CreateAccountValidatorUnitTest
+public class CreateAccountValidatorTests
 {
     private readonly CreateAccountCommandValidator _validator = new();
 

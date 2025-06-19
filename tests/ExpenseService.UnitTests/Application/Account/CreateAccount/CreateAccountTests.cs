@@ -7,7 +7,7 @@ using Moq;
 
 namespace ExpenseService.UnitTests.Application.Account.CreateAccount;
 
-public class CreateAccountUnitTest
+public class CreateAccountTests
 {
     [Fact]
     public async Task CreateAccount_ShouldCreateAccountAndPublishEventAndCommit()

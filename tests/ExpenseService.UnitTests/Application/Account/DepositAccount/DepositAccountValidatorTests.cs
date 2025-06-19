@@ -3,7 +3,7 @@ using FluentValidation.TestHelper;
 
 namespace ExpenseService.UnitTests.Application.Account.DepositAccount;
 
-public class DepositAccountValidatorUnitTest
+public class DepositAccountValidatorTests
 {
     private readonly DepositAccountCommandValidator _validator = new();
 

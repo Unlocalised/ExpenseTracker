@@ -7,7 +7,7 @@ using Moq;
 
 namespace ExpenseService.UnitTests.Application.Account.UpdateAccount;
 
-public class UpdateAccountUnitTest
+public class UpdateAccountTests
 {
     [Fact]
     public async Task UpdateAccount_ShouldUpdateAccountAndPublishEventAndCommit()

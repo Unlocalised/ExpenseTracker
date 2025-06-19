@@ -2,9 +2,9 @@ using ExpenseService.Domain.Account;
 using ExpenseService.Domain.Account.Events;
 using ExpenseTracker.BuildingBlocks.Common;
 
-namespace ExpenseService.UnitTests;
+namespace ExpenseService.UnitTests.Domain;
 
-public class AccountUnitTest
+public class AccountAggregateTests
 {
     [Fact]
     public void Create_ShouldCreateAndApplyAndEnqueueEvent()

@@ -5,7 +5,7 @@ using Moq;
 
 namespace AuditService.UnitTests.Application.GetAccountById;
 
-public class GetAccountByIdUnitTest
+public class GetAccountByIdTests
 {
     [Fact]
     public async Task GetAccountById_ShouldReturnAccountWhenExists()

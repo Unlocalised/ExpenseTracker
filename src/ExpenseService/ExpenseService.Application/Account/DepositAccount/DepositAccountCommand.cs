@@ -31,11 +31,17 @@ public class DepositAccountCommandHandler
         CancellationToken cancellationToken)
     {
         var transactionId = Guid.NewGuid();
-        var accountAggregate = await unitOfWork.Accounts.LoadAsync(request.AccountId, cancellationToken) ?? throw new NotFoundException("Account not found");
+        var accountAggregate = await unitOfWork.Accounts.LoadAsync(request.AccountId, cancellationToken)
+            ?? throw new NotFoundException("Account not found");
         accountAggregate.Deposit(request.Amount, transactionId);
-        await unitOfWork.Accounts.SaveAsync(accountAggregate, request.ExpectedVersion, cancellationToken);
+        await unitOfWork.Accounts.SaveAsync(accountAggregate,
+            request.ExpectedVersion,
+            cancellationToken);
 
-        var transactionAggregate = new TransactionAggregate(transactionId, request.Amount, TransactionType.Deposit, accountAggregate.Id);
+        var transactionAggregate = new TransactionAggregate(transactionId,
+            request.Amount,
+            TransactionType.Deposit,
+            accountAggregate.Id);
         unitOfWork.Transactions.Create(transactionAggregate);
         if (accountAggregate.UpdatedAt.HasValue)
             await unitOfWork.PublishAsync(new AccountBalanceUpdatedIntegrationEvent

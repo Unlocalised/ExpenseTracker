@@ -32,3 +32,4 @@ app.MapControllers();
 app.Run();
 
 return await app.RunJasperFxCommands(args);
+public partial class Program { }

@@ -3,7 +3,7 @@ using FluentValidation.TestHelper;
 
 namespace ExpenseService.UnitTests.Application.Account.UpdateAccount;
 
-public class UpdateAccountValidatorUnitTest
+public class UpdateAccountValidatorTests
 {
     private readonly UpdateAccountCommandValidator _validator = new();
 

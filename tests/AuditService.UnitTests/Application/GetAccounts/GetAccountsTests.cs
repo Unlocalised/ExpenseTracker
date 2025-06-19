@@ -4,7 +4,7 @@ using Moq;
 
 namespace AuditService.UnitTests.Application.GetAccounts;
 
-public class GetAccountsUnitTest
+public class GetAccountsTests
 {
     [Fact]
     public async Task GetAccounts_ShouldReturnAccounts()

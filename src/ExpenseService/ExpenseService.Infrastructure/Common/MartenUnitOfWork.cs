@@ -21,6 +21,4 @@ public class MartenUnitOfWork(IDocumentSession documentSession, IMessageContext 
         await documentSession.SaveChangesAsync(cancellationToken);
     }
     public async Task PublishAsync<T>(T message) => await messageContext.PublishAsync(message);
-
-    public void Dispose() => documentSession.Dispose();
 }
