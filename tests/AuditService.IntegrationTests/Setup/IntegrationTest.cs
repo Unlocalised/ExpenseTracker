@@ -2,7 +2,6 @@
 using JasperFx.Core;
 using Wolverine;
 using Marten;
-using Docker.DotNet.Models;
 
 namespace AuditService.IntegrationTests.Setup;
 public abstract class IntegrationTest : IAsyncLifetime
@@ -24,7 +23,6 @@ public abstract class IntegrationTest : IAsyncLifetime
         _factory = new CustomWebApplicationFactory<Program>();
         await _factory.InitializeAsync();
         _serviceScope = _factory.Services.CreateScope();
-        await WaitForPostgresReadinessAsync();
     }
 
     public async Task DisposeAsync()
@@ -38,28 +36,5 @@ public abstract class IntegrationTest : IAsyncLifetime
     {
         using var daemon = await DocumentStore.BuildProjectionDaemonAsync();
         await daemon.WaitForNonStaleData(5.Seconds());
-    }
-
-    public async Task WaitForPostgresReadinessAsync()
-    {
-        var maxAttempts = 5;
-        var delay = TimeSpan.FromSeconds(20);
-
-        for (int i = 0; i < maxAttempts; i++)
-        {
-            try
-            {
-                var connectionString = _factory.PostgreSqlContainer.GetConnectionString();
-                await using var conn = new Npgsql.NpgsqlConnection(connectionString);
-                await conn.OpenAsync();
-                return;
-            }
-            catch
-            {
-                if (i == maxAttempts - 1)
-                    throw;
-                await Task.Delay(delay);
-            }
-        }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Docker.DotNet.Models;
-using DotNet.Testcontainers.Builders;
+﻿using DotNet.Testcontainers.Builders;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -40,25 +39,16 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
         await RabbitMqContainer.StartAsync();
     }
 
-    // DisposeAsync will be called *by the IntegrationTest class* for each test method.
     public new async Task DisposeAsync()
     {
-        await PostgreSqlContainer.StopAsync();
         await PostgreSqlContainer.DisposeAsync();
-        await RedisContainer.StopAsync();
         await RedisContainer.DisposeAsync();
-        await RabbitMqContainer.StopAsync();
         await RabbitMqContainer.DisposeAsync();
         await base.DisposeAsync();
     }
 
     protected override IHost CreateHost(IHostBuilder builder)
     {
-        Task.WhenAll(PostgreSqlContainer.StartAsync(),
-             RedisContainer.StartAsync(),
-             RabbitMqContainer.StartAsync())
-            .GetAwaiter().GetResult();
-
         builder.ConfigureHostConfiguration(configBuilder =>
         {
             configBuilder.AddInMemoryCollection(
