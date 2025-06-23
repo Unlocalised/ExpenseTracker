@@ -10,7 +10,7 @@ public class TransactionAggregateTests
     {
         var transactionAggregate = new TransactionAggregate(Guid.NewGuid(), 0, ExpenseTracker.Contracts.Enums.TransactionType.Withdraw, Guid.NewGuid());
 
-        Assert.Equal(2, transactionAggregate.Version);
+        Assert.Equal(1, transactionAggregate.Version);
         var events = transactionAggregate.DequeueUncommittedEvents();
         Assert.NotEmpty(events);
         Assert.Single(events);

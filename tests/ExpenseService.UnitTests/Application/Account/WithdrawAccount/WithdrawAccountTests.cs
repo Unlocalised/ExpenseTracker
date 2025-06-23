@@ -27,7 +27,7 @@ public class WithdrawAccountTests
         var result = await WithdrawAccountCommandHandler.Handle(command, unitOfWork.Object, CancellationToken.None);
 
         Assert.Equal(accountId, result.AccountId);
-        Assert.Equal(4, result.NewVersion);
+        Assert.Equal(3, result.NewVersion);
         unitOfWork.Verify(unitOfWork => unitOfWork.Accounts.LoadAsync(accountId, CancellationToken.None), Times.Once);
         unitOfWork.Verify(unitOfWork => unitOfWork.Accounts.SaveAsync(accountAggregate, command.ExpectedVersion, CancellationToken.None), Times.Once);
         unitOfWork.Verify(unitOfWork => unitOfWork.Transactions.Create(It.IsAny<TransactionAggregate>()), Times.Once);

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Docker.DotNet.Models;
+using DotNet.Testcontainers.Builders;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Testcontainers.PostgreSql;
@@ -6,7 +8,7 @@ using Testcontainers.RabbitMq;
 using Testcontainers.Redis;
 
 namespace AuditService.IntegrationTests.Setup;
-public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
+public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IAsyncLifetime where TProgram : class
 {
     public RabbitMqContainer RabbitMqContainer { get; } =
         new RabbitMqBuilder()
@@ -26,21 +28,37 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
             .WithDatabase("db")
             .WithUsername("postgres")
             .WithPassword("postgres")
-            .Build();
+            .WithPortBinding(5432, true)
+            .WithWaitStrategy(Wait.ForUnixContainer()
+            .UntilCommandIsCompleted("pg_isready -U postgres -d db")
+            ).Build();
 
-    public override async ValueTask DisposeAsync()
+    public async Task InitializeAsync()
+    {
+        await PostgreSqlContainer.StartAsync();
+        await RedisContainer.StartAsync();
+        await RabbitMqContainer.StartAsync();
+    }
+
+    // DisposeAsync will be called *by the IntegrationTest class* for each test method.
+    public new async Task DisposeAsync()
     {
         await PostgreSqlContainer.StopAsync();
+        await PostgreSqlContainer.DisposeAsync();
         await RedisContainer.StopAsync();
+        await RedisContainer.DisposeAsync();
         await RabbitMqContainer.StopAsync();
+        await RabbitMqContainer.DisposeAsync();
         await base.DisposeAsync();
     }
 
     protected override IHost CreateHost(IHostBuilder builder)
     {
-        PostgreSqlContainer.StartAsync().GetAwaiter().GetResult();
-        RedisContainer.StartAsync().GetAwaiter().GetResult();
-        RabbitMqContainer.StartAsync().GetAwaiter().GetResult();
+        Task.WhenAll(PostgreSqlContainer.StartAsync(),
+             RedisContainer.StartAsync(),
+             RabbitMqContainer.StartAsync())
+            .GetAwaiter().GetResult();
+
         builder.ConfigureHostConfiguration(configBuilder =>
         {
             configBuilder.AddInMemoryCollection(
@@ -53,4 +71,5 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
         });
         return base.CreateHost(builder);
     }
+
 }

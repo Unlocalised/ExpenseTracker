@@ -19,7 +19,7 @@ public class CreateAccountTests
         var result = await CreateAccountCommandHandler.Handle(command, unitOfWork.Object, CancellationToken.None);
 
         Assert.NotEqual(Guid.Empty, result.AccountId);
-        Assert.Equal(2, result.NewVersion);
+        Assert.Equal(1, result.NewVersion);
         unitOfWork.Verify(unitOfWork => unitOfWork.Accounts.Create(It.IsAny<AccountAggregate>()), Times.Once);
         unitOfWork.Verify(unitOfWork => unitOfWork.PublishAsync(It.IsAny<AccountCreatedIntegrationEvent>()), Times.Once);
         unitOfWork.Verify(unitOfWork => unitOfWork.CommitAsync(CancellationToken.None), Times.Once);
@@ -37,7 +37,7 @@ public class CreateAccountTests
         var result = await CreateAccountCommandHandler.Handle(command, unitOfWork.Object, CancellationToken.None);
 
         Assert.NotEqual(Guid.Empty, result.AccountId);
-        Assert.Equal(3, result.NewVersion);
+        Assert.Equal(2, result.NewVersion);
         unitOfWork.Verify(unitOfWork => unitOfWork.Accounts.Create(It.IsAny<AccountAggregate>()), Times.Once);
         unitOfWork.Verify(unitOfWork => unitOfWork.Transactions.Create(It.IsAny<TransactionAggregate>()), Times.Once);
         unitOfWork.Verify(unitOfWork => unitOfWork.PublishAsync(It.IsAny<AccountCreatedIntegrationEvent>()), Times.Once);

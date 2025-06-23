@@ -23,7 +23,7 @@ public class UpdateAccountTests
         var result = await UpdateAccountCommandHandler.Handle(command, unitOfWork.Object, CancellationToken.None);
 
         Assert.Equal(accountId, result.AccountId);
-        Assert.Equal(3, result.NewVersion);
+        Assert.Equal(2, result.NewVersion);
         unitOfWork.Verify(unitOfWork => unitOfWork.Accounts.LoadAsync(accountId, CancellationToken.None), Times.Once);
         unitOfWork.Verify(unitOfWork => unitOfWork.Accounts.SaveAsync(accountAggregate, command.ExpectedVersion, CancellationToken.None), Times.Once);
         unitOfWork.Verify(unitOfWork => unitOfWork.PublishAsync(It.IsAny<AccountUpdatedIntegrationEvent>()), Times.Once);

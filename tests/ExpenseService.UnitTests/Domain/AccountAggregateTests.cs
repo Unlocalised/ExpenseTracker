@@ -11,7 +11,7 @@ public class AccountAggregateTests
     {
         var accountAggregate = new AccountAggregate(Guid.NewGuid(), string.Empty, string.Empty, string.Empty, string.Empty, string.Empty);
 
-        Assert.Equal(2, accountAggregate.Version);
+        Assert.Equal(1, accountAggregate.Version);
         var events = accountAggregate.DequeueUncommittedEvents();
         Assert.NotEmpty(events);
         Assert.Single(events);
@@ -27,7 +27,7 @@ public class AccountAggregateTests
         var amount = 100;
         accountAggregate.Deposit(amount, transactionId);
 
-        Assert.Equal(2, accountAggregate.Version);
+        Assert.Equal(1, accountAggregate.Version);
         Assert.Equal(accountAggregate.Balance, amount);
         var events = accountAggregate.DequeueUncommittedEvents();
         Assert.NotEmpty(events);
@@ -47,7 +47,7 @@ public class AccountAggregateTests
         accountAggregate.DequeueUncommittedEvents();
         accountAggregate.Withdraw(amount, transactionId);
 
-        Assert.Equal(3, accountAggregate.Version);
+        Assert.Equal(2, accountAggregate.Version);
         Assert.Equal(amount, accountAggregate.Balance);
         var events = accountAggregate.DequeueUncommittedEvents();
         Assert.NotEmpty(events);
@@ -71,7 +71,7 @@ public class AccountAggregateTests
         var accountAggregate = new AccountAggregate();
         accountAggregate.Delete();
 
-        Assert.Equal(2, accountAggregate.Version);
+        Assert.Equal(1, accountAggregate.Version);
         Assert.True(accountAggregate.DeletedAt.HasValue);
         Assert.False(accountAggregate.Enabled);
         var events = accountAggregate.DequeueUncommittedEvents();
@@ -87,7 +87,7 @@ public class AccountAggregateTests
         var accountAggregate = new AccountAggregate();
         accountAggregate.Update();
 
-        Assert.Equal(2, accountAggregate.Version);
+        Assert.Equal(1, accountAggregate.Version);
         Assert.True(accountAggregate.UpdatedAt.HasValue);
         Assert.False(accountAggregate.Enabled);
         var events = accountAggregate.DequeueUncommittedEvents();

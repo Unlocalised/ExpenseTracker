@@ -6,7 +6,7 @@ public class AccountIntegrationEventHandler
 {
     public static async Task Handle(AccountCreatedIntegrationEvent message, IDocumentSession session)
     {
-        await session.Events.AppendExclusive(message.Id, message);
+        session.Events.StartStream(message.Id, message);
         await session.SaveChangesAsync();
     }
 

@@ -1,15 +1,14 @@
-using AuditService.Application.Account.GetAccountById;
+using AuditService.Application.Account.GetAccounts;
 using AuditService.Domain.Account;
 using AuditService.IntegrationTests.Setup;
-using ExpenseTracker.Application.Common.Exceptions;
 using ExpenseTracker.Contracts.Account;
 
 namespace AuditService.IntegrationTests.Handlers;
 
-public class GetAccountByIdTests() : IntegrationTest
+public class GetAccountsTests : IntegrationTest
 {
     [Fact]
-    public async Task GetAccountById_ShouldReturnAccountWhenExists()
+    public async Task GetAccounts_ShouldReturnAccountsListWhenExists()
     {
         var accountCreatedEvent = new AccountCreatedIntegrationEvent
         {
@@ -21,8 +20,12 @@ public class GetAccountByIdTests() : IntegrationTest
         await DocumentSession.SaveChangesAsync();
         await GenerateProjectionsAsync();
 
-        var account = await MessageBus.InvokeAsync<AccountReadModel>(new GetAccountByIdQuery(accountCreatedEvent.Id));
+        var accounts = await MessageBus.InvokeAsync<IReadOnlyList<AccountReadModel>>(new GetAccountsQuery());
 
+        Assert.NotNull(accounts);
+        Assert.IsType<IReadOnlyList<AccountReadModel>>(accounts, exactMatch: false);
+        Assert.NotEmpty(accounts);
+        var account = Assert.Single(accounts);
         Assert.NotNull(account);
         Assert.IsType<AccountReadModel>(account);
         Assert.Equal(accountCreatedEvent.Id, account.Id);
@@ -32,10 +35,12 @@ public class GetAccountByIdTests() : IntegrationTest
     }
 
     [Fact]
-    public async Task GetAccountById_ShouldThrowWhenNotFound()
+    public async Task GetAccounts_ShouldReturnEmptyAccountsListWhenNoneExists()
     {
-        var accountId = Guid.NewGuid();
-        await Assert.ThrowsAsync<NotFoundException>(async () =>
-         await MessageBus.InvokeAsync<AccountReadModel>(new GetAccountByIdQuery(Guid.NewGuid())));
+        var accounts = await MessageBus.InvokeAsync<IReadOnlyList<AccountReadModel>>(new GetAccountsQuery());
+
+        Assert.NotNull(accounts);
+        Assert.IsType<IReadOnlyList<AccountReadModel>>(accounts, exactMatch: false);
+        Assert.Empty(accounts);
     }
 }

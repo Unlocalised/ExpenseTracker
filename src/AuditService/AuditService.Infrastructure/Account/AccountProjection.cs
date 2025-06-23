@@ -15,6 +15,7 @@ public class AccountProjection : SingleStreamProjection<AccountReadModel, Guid>
             view.Id = data.Id;
             view.Name = data.Name;
             view.Number = data.Number;
+            view.Balance = data.Balance;
             view.BankName = data.BankName;
             view.BankPhone = data.BankPhone;
             view.BankAddress = data.BankAddress;
