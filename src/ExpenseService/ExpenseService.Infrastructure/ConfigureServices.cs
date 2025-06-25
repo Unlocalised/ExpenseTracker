@@ -19,11 +19,6 @@ public static class ConfigureServices
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration, IHostEnvironment hostEnvironment)
     {
-        services.AddStackExchangeRedisCache(options =>
-        {
-            options.Configuration = configuration.GetConnectionString("Redis");
-            options.InstanceName = "ExpenseTracker_";
-        });
         services.AddMarten(options =>
         {
             // Establish the connection string to your Marten database

@@ -12,11 +12,13 @@ public abstract class IntegrationTest : IAsyncLifetime
     private IDocumentStore? _documentStore;
     private IMessageBus? _messageBus;
     private IDocumentSession? _documentSession;
+    private HttpClient? _httpClient;
 
     protected IServiceProvider ServiceProvider => _serviceScope!.ServiceProvider;
     protected IMessageBus MessageBus => _messageBus ??= ServiceProvider.GetRequiredService<IMessageBus>();
     protected IDocumentStore DocumentStore => _documentStore ??= ServiceProvider.GetRequiredService<IDocumentStore>();
     protected IDocumentSession DocumentSession => _documentSession ??= DocumentStore.LightweightSession();
+    protected HttpClient Client => _httpClient ??= _factory.CreateClient();
 
     public async Task InitializeAsync()
     {

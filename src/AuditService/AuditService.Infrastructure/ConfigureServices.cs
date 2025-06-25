@@ -1,16 +1,17 @@
 ﻿using AuditService.Application.Account.GetAccountById;
-using AuditService.Domain.Account;
+using AuditService.Infrastructure.Transaction;
 using AuditService.Infrastructure.Account;
 using AuditService.Infrastructure.Common;
-using AuditService.Infrastructure.Transaction;
-using JasperFx;
-using JasperFx.Events.Daemon;
-using Marten;
 using Microsoft.Extensions.Configuration;
+using AuditService.Application.Common;
 using Microsoft.Extensions.Hosting;
-using Wolverine;
+using AuditService.Domain.Account;
 using Wolverine.FluentValidation;
+using JasperFx.Events.Daemon;
 using Wolverine.RabbitMQ;
+using Wolverine;
+using JasperFx;
+using Marten;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -43,6 +44,7 @@ public static class ConfigureServices
             .AddAsyncDaemon(DaemonMode.Solo)
             .UseLightweightSessions();
         services.AddScoped<IAccountQueryRepository, AccountQueryRepository>();
+        services.AddSingleton<ICacheService, RedisCacheService>();
         return services;
     }
     public static IHostBuilder AddInfrastructureHostBuilder(this IHostBuilder hostBuilder)

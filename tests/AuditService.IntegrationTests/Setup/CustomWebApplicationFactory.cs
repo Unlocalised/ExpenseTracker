@@ -61,5 +61,4 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
         });
         return base.CreateHost(builder);
     }
-
 }
