@@ -1,21 +1,25 @@
 ﻿using AuditService.Application.Common;
+using AuditService.Domain.Account;
 using ExpenseTracker.Contracts.Account;
 using Marten;
+using Wolverine.Attributes;
 
 namespace AuditService.Infrastructure.Account.IntegrationHandlers;
-public class AccountIntegrationEventHandler
+
+[WolverineHandler]
+public class AccountIntegrationEventHanler
 {
     public static async Task Handle(AccountCreatedIntegrationEvent message, IDocumentSession session, ICacheService cacheService, CancellationToken cancellationToken)
     {
         var key = CacheKeyBuilder.ForAccounts();
         await cacheService.RemoveAsync(key, cancellationToken);
-        session.Events.StartStream(message.Id, message);
-        await session.SaveChangesAsync();
+        session.Events.StartStream<AccountReadModel>(message.Id, message);
+        await session.SaveChangesAsync(cancellationToken);
     }
 
     public static async Task Handle(AccountBalanceUpdatedIntegrationEvent message, IDocumentSession session, ICacheService cacheService, CancellationToken cancellationToken)
     {
-        string[] keys = [CacheKeyBuilder.ForAccounts(), CacheKeyBuilder.ForAccount(message.Id)];
+        string[] keys = [CacheKeyBuilder.ForAccount(message.Id)];
         await AppendEventAndInvalidateCache(message.Id, message, session, cacheService, keys, cancellationToken);
     }
 

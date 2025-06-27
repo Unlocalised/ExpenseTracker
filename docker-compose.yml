@@ -42,6 +42,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+
   kong:
     container_name: kong
     image: kong:3.9.0
@@ -102,6 +103,7 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-rabbitmq}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-LUUcvHJHv22GE7e}
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbitmq_management load_definitions \"/etc/rabbitmq/definitions.json\""
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 5s
@@ -110,6 +112,8 @@ services:
     volumes:
       - ./data/rabbitmq/lib:/var/lib/rabbitmq/
       - ./data/rabbitmq/log:/var/log/rabbitmq
+      - ./RabbitMQ/rabbitmq-definitions.json:/etc/rabbitmq/definitions.json
+      - ./RabbitMQ/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
 
   redis:
     image: redis

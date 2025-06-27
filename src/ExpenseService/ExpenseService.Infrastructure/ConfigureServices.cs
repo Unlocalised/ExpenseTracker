@@ -5,6 +5,7 @@ using ExpenseService.Infrastructure.Common;
 using ExpenseTracker.Contracts.Account;
 using ExpenseTracker.Contracts.Transaction;
 using JasperFx;
+using JasperFx.CodeGeneration;
 using Marten;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -21,21 +22,18 @@ public static class ConfigureServices
     {
         services.AddMarten(options =>
         {
-            // Establish the connection string to your Marten database
             options.Connection(configuration.GetConnectionString("Marten")!);
-            // Specify that we want to use STJ as our serializer
             options.UseSystemTextJsonForSerialization();
-            // If we're running in development mode, let Marten just take care
-            // of all necessary schema building and patching behind the scenes
-            if (hostEnvironment.IsDevelopment())
-            {
-                options.AutoCreateSchemaObjects = AutoCreate.All;
-            }
+            options.AutoCreateSchemaObjects = AutoCreate.All;
             options.Schema.For<AccountAggregate>().UseOptimisticConcurrency(true);
         })
-    .IntegrateWithWolverine()
-    .UseLightweightSessions();
-
+        .IntegrateWithWolverine()
+        .UseLightweightSessions();
+        services.CritterStackDefaults(x =>
+        {
+            x.Production.GeneratedCodeMode = TypeLoadMode.Static;
+            x.Production.ResourceAutoCreate = AutoCreate.None;
+        });
         services.AddScoped<IUnitOfWork, MartenUnitOfWork>();
         return services;
     }
@@ -47,11 +45,6 @@ public static class ConfigureServices
              options.Services.AddSingleton(typeof(IFailureAction<>), typeof(ValidationFailureAction<>));
              options.Discovery.IncludeAssembly(typeof(CreateAccountCommand).Assembly);
              options.UseRabbitMqUsingNamedConnection("RabbitMQ")
-              .DeclareQueue("Account", q =>
-              {
-                  q.PurgeOnStartup = true;
-                  q.TimeToLive(TimeSpan.FromMinutes(5));
-              })
               .UseSenderConnectionOnly()
               .DisableSystemRequestReplyQueueDeclaration();
              options.PublishMessage<AccountCreatedIntegrationEvent>().ToRabbitQueue("Account");
